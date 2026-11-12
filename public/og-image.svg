@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <pattern id="grid" width="42" height="42" patternUnits="userSpaceOnUse"><path d="M42 0H0V42" fill="none" stroke="#232D3F" stroke-width="1"/></pattern>
+    <radialGradient id="glow"><stop stop-color="#00E676" stop-opacity=".2"/><stop offset="1" stop-color="#00E676" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#0B0E14"/>
+  <rect width="1200" height="630" fill="url(#grid)" opacity=".72"/>
+  <circle cx="920" cy="315" r="320" fill="url(#glow)"/>
+  <g fill="none" stroke="#00E676" opacity=".7"><circle cx="920" cy="315" r="180"/><circle cx="920" cy="315" r="130"/><path d="M920 88v454M693 315h454" stroke-dasharray="4 8"/></g>
+  <circle cx="920" cy="315" r="13" fill="#FFB300"/>
+  <text x="82" y="120" fill="#00E676" font-family="Arial,sans-serif" font-size="22" letter-spacing="5">ASTRA CLUB PRESENTS / INTERCOLLEGIATE 2026</text>
+  <text x="78" y="280" fill="#F1F5F9" font-family="Arial,sans-serif" font-size="94" font-weight="700" letter-spacing="-4">ASTRA: ZERO</text>
+  <text x="78" y="380" fill="#F1F5F9" font-family="Arial,sans-serif" font-size="94" font-weight="700" letter-spacing="-4">HOUR<tspan fill="#FFB300">.</tspan></text>
+  <text x="84" y="440" fill="#8B9BB4" font-family="Arial,sans-serif" font-size="24" letter-spacing="2">A DEFENCE PROBLEM-SOLVING CONTEST</text>
+  <path d="M84 484h220" stroke="#232D3F" stroke-width="2"/>
+  <text x="84" y="535" fill="#FFB300" font-family="Arial,sans-serif" font-size="25" font-weight="700" letter-spacing="3">03 DECEMBER 2026</text>
+  <text x="844" y="572" fill="#8B9BB4" font-family="Arial,sans-serif" font-size="13" letter-spacing="3">MISSION / 001</text>
+</svg>
