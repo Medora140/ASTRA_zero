@@ -8,6 +8,28 @@ import { MissionMotion } from "@/components/mission-motion";
 import { SiteFooter, SiteNav } from "@/components/site-nav";
 import { event, rounds, timeline } from "@/lib/event";
 
+const sectionImages = {
+  droneSky: "/images/Screenshot%202026-11-13%20185056.png",
+  signalNodes: "/images/Screenshot%202026-11-13%20185153.png",
+  networkTraffic: "/images/Screenshot%202026-11-13%20185218.png",
+  droneForest: "/images/Screenshot%202026-11-13%20185525.png",
+  terrainMap: "/images/Screenshot%202026-11-13%20185752.png",
+} as const;
+
+function SectionBackdrop({
+  src,
+  position = "center",
+  tone = "soft",
+  priority = false,
+}: {
+  src: string;
+  position?: string;
+  tone?: "soft" | "medium" | "bright";
+  priority?: boolean;
+}) {
+  return <Image className={`section-backdrop backdrop-${tone}`} src={src} alt="" aria-hidden="true" fill sizes="100vw" priority={priority} style={{ objectPosition: position }} />;
+}
+
 function SectionEyebrow({ code, children }: { code: string; children: ReactNode }) {
   return <p className="eyebrow"><span>{code}</span><span className="eyebrow-line" aria-hidden="true" />{children}</p>;
 }
@@ -19,7 +41,8 @@ export default function HomePage() {
       <MissionMotion />
       <SiteNav />
       <main>
-        <section className="hero" id="home" aria-labelledby="hero-title">
+        <section className="hero image-section" id="home" aria-labelledby="hero-title">
+          <SectionBackdrop src={sectionImages.droneSky} position="68% center" tone="bright" priority />
           <div className="hero-grid" aria-hidden="true" />
           <div className="hero-orbit" aria-hidden="true">
             <div className="orbit-ring orbit-one" />
@@ -54,7 +77,8 @@ export default function HomePage() {
           <div className="hero-coordinate">ASTRA CLUB / BMSIT&amp;M</div>
         </section>
 
-        <section className="intro-section section-pad" id="about" aria-labelledby="about-title">
+        <section className="intro-section section-pad image-section" id="about" aria-labelledby="about-title">
+          <SectionBackdrop src={sectionImages.terrainMap} position="center 42%" tone="medium" />
           <div className="wrap intro-grid">
             <div data-reveal>
               <SectionEyebrow code="01">MISSION BRIEF</SectionEyebrow>
@@ -77,7 +101,8 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="rounds-section section-pad" id="rounds" aria-labelledby="rounds-title">
+        <section className="rounds-section section-pad image-section" id="rounds" aria-labelledby="rounds-title">
+          <SectionBackdrop src={sectionImages.networkTraffic} position="center 48%" tone="soft" />
           <div className="wrap">
             <div className="section-heading-row" data-reveal>
               <div><SectionEyebrow code="02">TWO INVESTIGATIONS</SectionEyebrow><h2 id="rounds-title">Two rounds.<br /><span>Two different signals.</span></h2></div>
@@ -88,7 +113,8 @@ export default function HomePage() {
                 <article className={`round-card accent-${round.accent}`} key={round.number} data-reveal>
                   <div className="round-card-top"><span className="round-number">{round.number}</span><span className="round-status">FIELD DOSSIER / {round.number === "01" ? "DIGITAL" : "NETWORK"}</span></div>
                   {round.number === "01" ? (
-                    <figure className="round-visual flight-visual">
+                    <figure className="round-visual flight-visual image-section">
+                      <SectionBackdrop src={sectionImages.droneForest} position="center 44%" tone="medium" />
                       <div className="flight-grid" aria-hidden="true" />
                       <Image className="round-route-image" src="/images/flight-route.png" alt="" aria-hidden="true" width={697} height={413} />
                       <Image className="round-drone-image" src="/images/ghatak-drone.png" alt="Illustration of the GHATAK autonomous rescue drone from the mission brief" width={857} height={393} />
@@ -112,7 +138,8 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="twist-section section-pad" aria-labelledby="twist-title">
+        <section className="twist-section section-pad image-section" aria-labelledby="twist-title">
+          <SectionBackdrop src={sectionImages.signalNodes} position="center 52%" tone="medium" />
           <div className="wrap twist-layout">
             <div className="twist-copy" data-reveal>
               <SectionEyebrow code="03">SPOILER / WITHHELD</SectionEyebrow>
@@ -128,7 +155,8 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="schedule-section section-pad" id="schedule" aria-labelledby="schedule-title">
+        <section className="schedule-section section-pad image-section" id="schedule" aria-labelledby="schedule-title">
+          <SectionBackdrop src={sectionImages.terrainMap} position="center 62%" tone="medium" />
           <div className="wrap schedule-layout">
             <div className="schedule-intro" data-reveal>
               <SectionEyebrow code="04">SINGLE-DAY DEPLOYMENT</SectionEyebrow>
@@ -148,14 +176,16 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="people-section section-pad" id="guests" aria-labelledby="guests-title">
+        <section className="people-section section-pad image-section" id="guests" aria-labelledby="guests-title">
+          <SectionBackdrop src={sectionImages.droneSky} position="right 42%" tone="medium" />
           <div className="wrap people-grid">
             <div className="people-copy" data-reveal><SectionEyebrow code="05">MISSION CONTROL</SectionEyebrow><h2 id="guests-title">Guest speakers</h2><p>Guest names and session details will be announced once confirmed.</p></div>
             <article className="placeholder-card guest-placeholder" data-reveal><span className="placeholder-index">GUEST DOSSIER / PENDING</span><div className="placeholder-silhouette" aria-hidden="true">?</div><div><small>FEATURED GUEST</small><h3>To be announced</h3><p>Speaker details coming soon.</p></div><span className="placeholder-stamp">AWAITING<br />CONFIRMATION</span></article>
           </div>
         </section>
 
-        <section className="sponsor-section section-pad" id="sponsors" aria-labelledby="sponsors-title">
+        <section className="sponsor-section section-pad image-section" id="sponsors" aria-labelledby="sponsors-title">
+          <SectionBackdrop src={sectionImages.networkTraffic} position="center 55%" tone="medium" />
           <div className="wrap sponsor-inner">
             <div className="sponsor-heading" data-reveal><SectionEyebrow code="06">PARTNERSHIP CHANNEL</SectionEyebrow><h2 id="sponsors-title">Sponsors &amp; partners</h2><p>Partner names and logos will appear here after confirmation.</p></div>
             <div className="sponsor-placeholders" aria-label="Sponsor placeholders">
@@ -164,7 +194,8 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="prize-cta-section" aria-label="Prize pool and registration" data-reveal>
+        <section className="prize-cta-section image-section" aria-label="Prize pool and registration" data-reveal>
+          <SectionBackdrop src={sectionImages.droneForest} position="center 60%" tone="medium" />
           <div className="wrap prize-cta-inner">
             <div><SectionEyebrow code="07">REWARDS FOR REASONING</SectionEyebrow><p className="prize-pool">{event.prizePool}<span> PRIZE POOL</span></p><p className="prize-small">Award distribution details will be announced.</p></div>
             <div className="prize-cta-action"><p>THE NAME IS LOCKED.<br /><span>THE DATE IS SET.</span></p><Link className="button button-primary" href="/register">ASSEMBLE YOUR TEAM <span aria-hidden="true">↗</span></Link></div>

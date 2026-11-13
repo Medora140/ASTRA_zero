@@ -26,6 +26,25 @@ export function MissionMotion() {
         );
       });
 
+      gsap.utils.toArray<HTMLImageElement>(".section-backdrop").forEach((image) => {
+        const section = image.parentElement;
+        if (!section) return;
+        const targetOpacity = image.classList.contains("backdrop-bright")
+          ? 0.68
+          : image.classList.contains("backdrop-medium") ? 0.5 : 0.34;
+
+        gsap.fromTo(image,
+          { autoAlpha: 0, scale: 1.07 },
+          {
+            autoAlpha: targetOpacity,
+            scale: 1,
+            duration: 1.05,
+            ease: "power2.out",
+            scrollTrigger: { trigger: section, start: "top 82%", toggleActions: "play none none reverse" },
+          },
+        );
+      });
+
       const drone = document.querySelector(".round-drone-image");
       if (drone) {
         gsap.to(drone, {

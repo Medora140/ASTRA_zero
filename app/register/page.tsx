@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { MissionMotion } from "@/components/mission-motion";
 import { SiteFooter, SiteNav } from "@/components/site-nav";
-import { event, unstopFormFields } from "@/lib/event";
+import { event, registrationFormFields } from "@/lib/event";
 
 export const metadata: Metadata = {
   title: "Team Registration",
@@ -18,13 +19,14 @@ export const metadata: Metadata = {
 };
 
 export default function RegisterPage() {
-  const isPublishedRegistration = Boolean(event.registrationUrl);
+  const isPublishedRegistration = Boolean(event.googleFormUrl);
 
   return (
     <>
       <MissionMotion />
       <SiteNav />
-      <main className="register-page">
+      <main className="register-page image-section">
+        <Image className="section-backdrop backdrop-medium" src="/images/Screenshot%202026-11-13%20185056.png" alt="" aria-hidden="true" fill sizes="100vw" />
         <div className="register-grid" aria-hidden="true" />
         <div className="wrap register-wrap">
           <Link href="/" className="back-link">← RETURN TO MISSION BRIEF</Link>
@@ -41,35 +43,37 @@ export default function RegisterPage() {
           </div>
 
           <div className="register-columns">
-            <section className="registration-checklist" aria-labelledby="checklist-title" data-reveal>
+            <section className="registration-checklist image-section" aria-labelledby="checklist-title" data-reveal>
+              <Image className="section-backdrop backdrop-soft" src="/images/Screenshot%202026-11-13%20185218.png" alt="" aria-hidden="true" fill sizes="(max-width: 700px) 92vw, 52vw" />
               <div className="register-panel-label"><span>FORM 01</span><span>DETAILS TO PREPARE</span></div>
               <h2 id="checklist-title">Before you register</h2>
-              <p>The official event form will collect your team details, including your college name.</p>
+              <p>The participant Google Form will collect your team details, including your college name.</p>
               <ul className="form-fields">
-                {unstopFormFields.map((field, index) => <li key={field}><span>{String(index + 1).padStart(2, "0")}</span>{field}<b aria-hidden="true">✓</b></li>)}
+                {registrationFormFields.map((field, index) => <li key={field}><span>{String(index + 1).padStart(2, "0")}</span>{field}<b aria-hidden="true">✓</b></li>)}
               </ul>
               <div className="college-required"><span className="required-star">*</span><div><strong>College name is required</strong><small>ASTRA: ZERO HOUR is an intercollege event. Enter your institution’s full name in the official form.</small></div></div>
             </section>
 
-            <aside className="team-brief" aria-labelledby="team-brief-title" data-reveal>
+            <aside className="team-brief image-section" aria-labelledby="team-brief-title" data-reveal>
+              <Image className="section-backdrop backdrop-soft" src="/images/Screenshot%202026-11-13%20185752.png" alt="" aria-hidden="true" fill sizes="(max-width: 700px) 92vw, 42vw" />
               <div className="register-panel-label"><span>ROSTER LIMIT</span><span>01–{String(event.teamLimit).padStart(2, "0")}</span></div>
               <div className="roster-visual" aria-hidden="true"><div className="roster-ring"><span>{String(event.teamLimit).padStart(2, "0")}</span><small>MAX</small></div><span className="roster-axis axis-a" /><span className="roster-axis axis-b" /><span className="roster-coordinate coord-a">TEAM / 001</span><span className="roster-coordinate coord-b">ROSTER / 05</span></div>
               <h2 id="team-brief-title">One team.<br />Two operations.</h2>
               <p>Register one team with a named leader and up to four additional members. Eligibility and final participation rules will be listed on the official event page.</p>
-              <div className="registration-status"><span className="amber-dot" /><div><strong>{isPublishedRegistration ? "OFFICIAL REGISTRATION LINK" : "EVENT PAGE PENDING"}</strong><small>{isPublishedRegistration ? "Continue to the published ASTRA event form on Unstop." : "The event-specific registration link will appear here once published."}</small></div></div>
+              <div className="registration-status"><span className="amber-dot" /><div><strong>{isPublishedRegistration ? "OFFICIAL GOOGLE FORM" : "GOOGLE FORM LINK PENDING"}</strong><small>{isPublishedRegistration ? "Continue to the published ASTRA participant form." : "The Google Form link will appear here once the form is ready."}</small></div></div>
               {isPublishedRegistration ? (
-                <a className="button button-primary register-submit" href={event.registrationUrl} target="_blank" rel="noopener noreferrer">
-                  OPEN OFFICIAL FORM <span aria-hidden="true">↗</span>
+                <a className="button button-primary register-submit" href={event.googleFormUrl} target="_blank" rel="noopener noreferrer">
+                  OPEN GOOGLE FORM <span aria-hidden="true">↗</span>
                 </a>
               ) : (
                 <button className="button button-primary register-submit button-disabled" type="button" disabled>
-                  REGISTRATION LINK COMING SOON
+                  GOOGLE FORM LINK COMING SOON
                 </button>
               )}
               <p className="register-return"><Link href="/#rounds">Review the two operations <span aria-hidden="true">↗</span></Link></p>
             </aside>
           </div>
-          <p className="registration-fineprint"><span>NOTE</span> The event-specific Unstop page is pending. Schedule times, venue, guest, and sponsor details will be updated when confirmed.</p>
+          <p className="registration-fineprint"><span>NOTE</span> The participant Google Form link is pending. Schedule times, venue, guest, and sponsor details will be updated when confirmed.</p>
         </div>
       </main>
       <SiteFooter />

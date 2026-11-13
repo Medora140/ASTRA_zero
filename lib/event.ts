@@ -13,8 +13,8 @@ export const event = {
   teamLimit: 5,
   networkNodes: 8,
   siteUrl,
-  // Keep empty until ASTRA publishes its event-specific Unstop registration page.
-  registrationUrl: process.env.NEXT_PUBLIC_UNSTOP_REGISTRATION_URL || "",
+  // Keep empty until ASTRA publishes the participant Google Form.
+  googleFormUrl: process.env.NEXT_PUBLIC_GOOGLE_FORM_URL || "",
 } as const;
 
 export const sections = [
@@ -60,7 +60,7 @@ export const timeline = [
   { time: "TIME TBA", label: "Final evaluation & closing", code: "DEBRIEF" },
 ] as const;
 
-export const unstopFormFields = [
+export const registrationFormFields = [
   "Team name",
   "College name (required)",
   "Team leader name, email, and phone",

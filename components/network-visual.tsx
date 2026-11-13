@@ -23,6 +23,14 @@ export function NetworkVisual({ variant = "brief" }: { variant?: "brief" | "twis
   return (
     <figure className={`round-visual network-visual${isTwist ? " network-visual-twist" : ""}`}>
       <div className="network-surface">
+        <Image
+          className="network-background"
+          src={isTwist ? "/images/Screenshot%202026-11-13%20185153.png" : "/images/Screenshot%202026-11-13%20185218.png"}
+          alt=""
+          aria-hidden="true"
+          fill
+          sizes="(max-width: 700px) 92vw, 46vw"
+        />
         <svg className="network-map" viewBox="0 0 480 320" role="img" aria-labelledby={titleId}>
           <title id={titleId}>Eight interconnected communication stations</title>
           <desc>All eight stations are shown in the same style. No station is identified as the compromised one.</desc>
