@@ -9,10 +9,10 @@ export function EventSchema() {
     eventStatus: "https://schema.org/EventScheduled",
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     description:
-      "A one-day intercollege defence problem-solving contest with three evidence-led technical rounds, hosted by ASTRA Club.",
+      "A one-day intercollege defence problem-solving contest with two evidence-led investigations: the GHATAK autonomous rescue drone incident and an eight-station communication network challenge.",
     organizer: {
       "@type": "Organization",
-      name: "ASTRA Club, BMSIT&M",
+      name: `ASTRA — ${event.clubName} — BMSIT&M`,
     },
     url: event.siteUrl,
   };
