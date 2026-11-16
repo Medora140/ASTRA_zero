@@ -25,7 +25,7 @@ export function NetworkVisual({ variant = "brief" }: { variant?: "brief" | "twis
       <div className="network-surface">
         <Image
           className="network-background"
-          src={isTwist ? "/images/Screenshot%202026-11-13%20185153.png" : "/images/Screenshot%202026-11-13%20185218.png"}
+          src={isTwist ? "/images/backdrop-signal-nodes.webp" : "/images/backdrop-network-traffic.webp"}
           alt=""
           aria-hidden="true"
           fill
@@ -36,8 +36,8 @@ export function NetworkVisual({ variant = "brief" }: { variant?: "brief" | "twis
           <desc>All eight stations are shown in the same style. No station is identified as the compromised one.</desc>
           <defs>
             <radialGradient id={`node-glow-${variant}`}>
-              <stop offset="0" stopColor="#00E676" stopOpacity=".18" />
-              <stop offset="1" stopColor="#00E676" stopOpacity="0" />
+              <stop offset="0" stopColor={isTwist ? "#FFB300" : "#00E676"} stopOpacity=".24" />
+              <stop offset="1" stopColor={isTwist ? "#FFB300" : "#00E676"} stopOpacity="0" />
             </radialGradient>
           </defs>
           {links.map(([from, to], index) => {
@@ -63,8 +63,16 @@ export function NetworkVisual({ variant = "brief" }: { variant?: "brief" | "twis
       </div>
       {!isTwist && (
         <figcaption className="network-context">
-          <Image src="/images/context-landmark.png" alt="Illustration of a nearby landmark used as one type of contextual clue" width={220} height={217} />
-          <span><strong>A LANDMARK IS ONE CLUE.</strong><small>COMPARE IT WITH THE MAP, ENVIRONMENT, AND OTHER CONTEXT.</small></span>
+          <Image
+            src="/images/context-landmark.webp"
+            alt="Illustration of a nearby landmark used as one type of contextual clue"
+            width={220}
+            height={217}
+          />
+          <span>
+            <strong>A LANDMARK IS ONE CLUE.</strong>
+            <small>COMPARE IT WITH THE MAP, ENVIRONMENT, AND OTHER CONTEXT.</small>
+          </span>
         </figcaption>
       )}
     </figure>

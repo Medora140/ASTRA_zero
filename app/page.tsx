@@ -75,7 +75,6 @@ export default function HomePage() {
               aria-hidden="true"
               width={697}
               height={413}
-              priority
             />
             <Image
               className="hero-drone-art"
@@ -84,7 +83,6 @@ export default function HomePage() {
               aria-hidden="true"
               width={857}
               height={393}
-              priority
             />
             <div className="orbit-crosshair">+</div>
             <div className="orbit-target"><span /></div>
