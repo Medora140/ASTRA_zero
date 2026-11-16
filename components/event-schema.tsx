@@ -8,6 +8,18 @@ export function EventSchema() {
     startDate: event.startDate,
     eventStatus: "https://schema.org/EventScheduled",
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    location: {
+      "@type": "Place",
+      name: event.venue.name,
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: event.venue.address,
+        addressLocality: "Bengaluru",
+        addressRegion: "Karnataka",
+        postalCode: "560119",
+        addressCountry: "IN",
+      },
+    },
     description:
       "A one-day intercollege defence problem-solving contest with two evidence-led investigations: the GHATAK autonomous rescue drone incident and an eight-station communication network challenge.",
     organizer: {

@@ -1,6 +1,28 @@
 import type { Metadata, Viewport } from "next";
+import { Barlow_Condensed, IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { event } from "@/lib/event";
+
+const barlowCondensed = Barlow_Condensed({
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
+  variable: "--font-barlow-condensed",
+  display: "swap",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-ibm-plex-mono",
+  display: "swap",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-space-grotesk",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(event.siteUrl),
@@ -9,13 +31,14 @@ export const metadata: Metadata = {
     template: "%s | ASTRA: ZERO HOUR",
   },
   description:
-    "ASTRA: ZERO HOUR is a one-day intercollege defence problem-solving contest on 03 December 2026. Investigate the GHATAK drone incident and an eight-station communication network.",
+    "ASTRA: ZERO HOUR is a one-day intercollege defence problem-solving contest on 03 December 2026 at BMSIT&M, Bengaluru. Investigate the GHATAK drone incident and an eight-station communication network.",
   keywords: [
     "ASTRA Zero Hour",
     "Defence problem-solving contest",
     "Intercollege event 2026",
     "GHATAK drone investigation",
     "Compromised Node challenge",
+    "BMSIT&M Bengaluru",
   ],
   applicationName: "ASTRA: ZERO HOUR",
   alternates: { canonical: "/" },
@@ -23,15 +46,15 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "ASTRA: ZERO HOUR",
     title: "ASTRA: ZERO HOUR — A Defence Problem-Solving Contest",
-    description: "Two investigations. One day. ₹15,000 prize pool · 03 December 2026.",
+    description: "Two investigations. One day. ₹15,000 prize pool · 03 December 2026 · BMSIT&M Bengaluru.",
     url: "/",
-    images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "ASTRA: ZERO HOUR — 03 December 2026" }],
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "ASTRA: ZERO HOUR — 03 December 2026" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "ASTRA: ZERO HOUR — A Defence Problem-Solving Contest",
-    description: "A Defence Problem-Solving Contest · 03 December 2026",
-    images: ["/og-image.svg"],
+    description: "A Defence Problem-Solving Contest · 03 December 2026 · BMSIT&M Bengaluru",
+    images: ["/og-image.png"],
   },
 };
 
@@ -42,8 +65,16 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html
+      lang="en"
+      className={`${barlowCondensed.variable} ${ibmPlexMono.variable} ${spaceGrotesk.variable}`}
+    >
+      <body>
+        <a href="#main-content" className="skip-link">
+          SKIP TO CONTENT [ESC/TAB]
+        </a>
+        {children}
+      </body>
     </html>
   );
 }

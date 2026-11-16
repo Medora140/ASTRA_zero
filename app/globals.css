@@ -1,4 +1,21 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import "tailwindcss/theme";
+@import "tailwindcss/utilities";
+
+@theme {
+  --color-obsidian: var(--obsidian);
+  --color-slate: var(--slate);
+  --color-slate-raised: var(--slate-raised);
+  --color-phosphor: var(--phosphor);
+  --color-amber: var(--amber);
+  --color-crimson: var(--crimson);
+  --color-titanium: var(--titanium);
+  --color-steel: var(--steel);
+  --color-grid: var(--grid);
+
+  --font-mono: var(--mono);
+  --font-sans: var(--sans);
+  --font-display: var(--display);
+}
 
 :root {
   --obsidian: #0b0e14;
@@ -10,9 +27,9 @@
   --titanium: #f1f5f9;
   --steel: #8b9bb4;
   --grid: #232d3f;
-  --mono: "IBM Plex Mono", "Courier New", monospace;
-  --sans: "Space Grotesk", "Segoe UI", sans-serif;
-  --display: "Barlow Condensed", Impact, "Arial Narrow", sans-serif;
+  --mono: var(--font-ibm-plex-mono, "IBM Plex Mono"), "Courier New", monospace;
+  --sans: var(--font-space-grotesk, "Space Grotesk"), "Segoe UI", sans-serif;
+  --display: var(--font-barlow-condensed, "Barlow Condensed"), Impact, "Arial Narrow", sans-serif;
   color-scheme: dark;
 }
 
@@ -400,4 +417,77 @@ h2 span { color: var(--steel); }
 }
 @media (prefers-reduced-motion: reduce) {
   *,*::before,*::after { scroll-behavior: auto!important; animation-duration: .01ms!important; animation-iteration-count: 1!important; transition-duration: .01ms!important; }
+}
+
+/* Accessibility & Skip Link */
+.skip-link {
+  position: absolute;
+  top: -60px;
+  left: 20px;
+  z-index: 100;
+  padding: 10px 16px;
+  background: var(--phosphor);
+  color: var(--obsidian);
+  font: 700 11px var(--mono);
+  letter-spacing: .08em;
+  text-decoration: none;
+  border: 1px solid var(--phosphor);
+  transition: top .2s ease;
+}
+.skip-link:focus {
+  top: 16px;
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}
+
+/* Tactical Status Pulse & Indicators */
+@keyframes tactical-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.92); }
+}
+.pulse-indicator {
+  animation: tactical-pulse 2.2s ease-in-out infinite;
+}
+
+/* Classified / Pending Badge */
+.classified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  background: rgba(255,179,0,.08);
+  border: 1px solid rgba(255,179,0,.3);
+  color: var(--amber);
+  font: 600 10px var(--mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+/* Button Disabled Enhanced Styling */
+.button-disabled {
+  opacity: .62;
+  cursor: not-allowed;
+  background: rgba(21,27,38,.85)!important;
+  color: var(--steel)!important;
+  border-color: var(--grid)!important;
+  box-shadow: none!important;
+}
+.button-disabled:hover {
+  transform: none!important;
+}
+
+/* Active Nav State */
+.desktop-nav a.nav-active {
+  color: var(--phosphor);
+  position: relative;
+}
+.desktop-nav a.nav-active::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--phosphor);
+  box-shadow: 0 0 8px var(--phosphor);
 }

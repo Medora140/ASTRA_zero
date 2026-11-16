@@ -12,6 +12,11 @@ export const event = {
   prizePool: "₹15,000",
   teamLimit: 5,
   networkNodes: 8,
+  venue: {
+    name: "BMS Institute of Technology and Management",
+    address: "Doddaballapura Main Rd, Yelahanka, Avalahalli, Bengaluru, Karnataka 560119",
+    shortLabel: "BMSIT&M · BENGALURU",
+  },
   siteUrl,
   // Keep empty until ASTRA publishes the participant Google Form.
   googleFormUrl: process.env.NEXT_PUBLIC_GOOGLE_FORM_URL || "",
