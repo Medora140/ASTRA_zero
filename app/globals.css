@@ -48,8 +48,24 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--amber); outline
 .wrap { width: min(1160px, calc(100% - 48px)); margin-inline: auto; }
 .section-pad { padding: 112px 0; }
 .scroll-morph-section { position: relative; z-index: 0; isolation: isolate; overflow-x: clip; }
-.station-card { width: 100%; max-width: 100%; height: 210px; min-width: 0; }
-.animation-paused { animation-play-state: paused!important; }
+.station-card { width: 100%; max-width: 100%; height: 210px; min-width: 0; container-type: inline-size; }
+.station-card-button { container-type: inline-size; }
+.station-card-face { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; padding: clamp(9px,7cqi,14px); border-radius: inherit; background: var(--slate); }
+.station-card-image { z-index: 0; object-fit: cover; transition: transform .45s ease,opacity .2s ease; }
+.station-card-button:hover .station-card-image { transform: scale(1.035); }
+.station-card-vignette { position: absolute; z-index: 1; inset: 0; pointer-events: none; background: linear-gradient(180deg,rgba(5,9,14,.78) 0%,rgba(5,9,14,.18) 34%,rgba(5,9,14,.16) 52%,rgba(5,9,14,.94) 100%); }
+.station-card-header,.station-card-footer { position: relative; z-index: 2; display: flex; min-width: 0; }
+.station-card-header { align-items: flex-start; justify-content: space-between; gap: 5px; }
+.station-card-id { flex: 0 0 auto; color: var(--phosphor); font: 700 clamp(10px,8cqi,14px)/1 var(--mono); letter-spacing: .06em; text-shadow: 0 1px 5px #000; }
+.station-card-sector { max-width: 72%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border: 1px solid rgba(241,245,249,.4); background: rgba(11,14,20,.78); color: var(--titanium); padding: 3px 5px; font: 500 clamp(6px,4.7cqi,8px)/1.2 var(--mono); letter-spacing: .035em; }
+.station-card-footer { flex-direction: column; align-items: flex-start; gap: 3px; }
+.station-card-name { display: -webkit-box; max-width: 100%; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; color: var(--titanium); font: 800 clamp(16px,14cqi,24px)/.95 var(--display); letter-spacing: .035em; text-transform: uppercase; text-shadow: 0 1px 7px rgba(0,0,0,.9); }
+.station-card-frequency { color: var(--titanium); font: 500 clamp(8px,6cqi,10px)/1.2 var(--mono); letter-spacing: .04em; text-shadow: 0 1px 5px #000; }
+.station-card-status { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--amber); font: 600 clamp(7px,5cqi,9px)/1.2 var(--mono); letter-spacing: .05em; text-shadow: 0 1px 5px #000; }
+.station-card-clue { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 4; font-size: clamp(8px,6.5cqi,10px); }
+.station-card-value { max-width: 68%; overflow: hidden; text-align: right; text-overflow: ellipsis; white-space: nowrap; }
+.station-card-reveal { transform-style: preserve-3d; }
+.animation-paused,.animation-paused * { animation-play-state: paused!important; }
 .image-section { position: relative; isolation: isolate; overflow: hidden; }
 .section-backdrop { position: absolute!important; z-index: -2; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 .backdrop-soft { opacity: .34; filter: saturate(.5) contrast(1.16); }
@@ -442,6 +458,14 @@ h2 span { color: var(--steel); }
   .countdown-unit strong { font-size: 21px; }
   .timeline-item { grid-template-columns: 30px minmax(0,1fr) auto; gap: 5px; }.timeline-time { font-size: 6px; padding: 4px; }.timeline-content h3 { font-size: 14px; }
   .round-card-top { gap: 8px; }.round-status { font-size: 7px; }.round-visual { max-width: 100%; min-height: 200px; }.visual-coordinate { display: none; }.register-stats { grid-template-columns: 1fr 1fr; }.sponsor-placeholders > div { min-height: 105px; }.sponsor-placeholders strong { font-size: 11px; }
+}
+@media (min-width: 941px) {
+  .scroll-morph-section { min-height: 145vh; }
+  .station-grid { grid-template-columns: repeat(4,135px); justify-content: center; gap: 20px 24px; }
+}
+@media (max-width: 700px) {
+  .station-card { height: clamp(190px,62vw,235px); }
+  .station-card-face { padding: clamp(10px,4vw,14px); }
 }
 @media (max-width: 699px) {
   .backdrop-soft,.backdrop-medium,.backdrop-bright,.network-background { filter: none!important; }

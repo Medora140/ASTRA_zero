@@ -17,9 +17,7 @@ export function MissionMotion() {
       { rootMargin: "100px" },
     );
     document
-      .querySelectorAll(
-        ".orbit-ring, .hero-drone-art, .hero-route-art, .round-route-image, .network-flow, .network-node-glow, .twist-scanline, .twist-status strong, .pulse-indicator",
-      )
+      .querySelectorAll(".hero, .network-visual, .twist-art, .scroll-morph-section")
       .forEach((element) => animationObserver.observe(element));
 
     gsap.registerPlugin(ScrollTrigger);

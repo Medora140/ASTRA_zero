@@ -8,6 +8,7 @@ import {
   useTransform,
   useSpring,
   useReducedMotion,
+  useInView,
   type MotionValue,
 } from "framer-motion";
 import gsap from "gsap";
@@ -32,7 +33,7 @@ export const NETWORK_STATIONS: StationData[] = [
     freq: "142.85 MHz",
     sector: "SEC-NORTH-1",
     status: "RELAY ACTIVE",
-    imageSrc: "/images/stations/n01.webp",
+    imageSrc: "/images/stations/n01_pic.webp",
     clue: "Perimeter landmark matched with thermal telemetry.",
     bandwidth: "32 kbps telemetry",
   },
@@ -42,7 +43,7 @@ export const NETWORK_STATIONS: StationData[] = [
     freq: "228.40 MHz",
     sector: "SEC-NORTH-2",
     status: "SIGNAL NOMINAL",
-    imageSrc: "/images/stations/n02.webp",
+    imageSrc: "/images/stations/n02_pic.webp",
     clue: "Carrier signal reflects secondary harmonic distortion.",
     bandwidth: "64 kbps digital",
   },
@@ -52,7 +53,7 @@ export const NETWORK_STATIONS: StationData[] = [
     freq: "315.10 MHz",
     sector: "SEC-EAST-1",
     status: "TRAFFIC DENSE",
-    imageSrc: "/images/stations/n03.webp",
+    imageSrc: "/images/stations/n03_pic.webp",
     clue: "Heavy relay packet load during incident timestamp.",
     bandwidth: "128 kbps mesh",
   },
@@ -62,7 +63,7 @@ export const NETWORK_STATIONS: StationData[] = [
     freq: "440.05 MHz",
     sector: "SEC-CENTRAL",
     status: "MESH HUB",
-    imageSrc: "/images/stations/n04.webp",
+    imageSrc: "/images/stations/n04_pic.webp",
     clue: "Central topological junction connecting four sub-nodes.",
     bandwidth: "256 kbps backbone",
   },
@@ -72,7 +73,7 @@ export const NETWORK_STATIONS: StationData[] = [
     freq: "512.90 MHz",
     sector: "SEC-WEST-1",
     status: "TELEMETRY SYNC",
-    imageSrc: "/images/stations/n05.webp",
+    imageSrc: "/images/stations/n05_pic.webp",
     clue: "Autonomous rescue ping acknowledged at 02:14:08.",
     bandwidth: "48 kbps pulsed",
   },
@@ -82,7 +83,7 @@ export const NETWORK_STATIONS: StationData[] = [
     freq: "618.30 MHz",
     sector: "SEC-SOUTH-1",
     status: "PACKET BURST",
-    imageSrc: "/images/stations/n06.webp",
+    imageSrc: "/images/stations/n06_pic.webp",
     clue: "Burst communication captured before routing timeout.",
     bandwidth: "96 kbps burst",
   },
@@ -92,7 +93,7 @@ export const NETWORK_STATIONS: StationData[] = [
     freq: "725.60 MHz",
     sector: "SEC-SOUTH-2",
     status: "CARRIER DETECT",
-    imageSrc: "/images/stations/n07.webp",
+    imageSrc: "/images/stations/n07_pic.webp",
     clue: "Signal parity mismatch reported in local event logs.",
     bandwidth: "64 kbps carrier",
   },
@@ -102,7 +103,7 @@ export const NETWORK_STATIONS: StationData[] = [
     freq: "840.15 MHz",
     sector: "SEC-PERIMETER",
     status: "MONITORING",
-    imageSrc: "/images/stations/n08.webp",
+    imageSrc: "/images/stations/n08_pic.webp",
     clue: "Peripheral beacon observing outer boundary relays.",
     bandwidth: "32 kbps beacon",
   },
@@ -135,7 +136,7 @@ function FlipCard({ station, index, isFlipped, onToggleFlip, isStatic = false }:
       onClick={onToggleFlip}
       aria-label={`${station.id} ${shortName}. ${isFlipped ? "Dossier open; activate to show station image." : "Activate to view dossier."}`}
       aria-expanded={isFlipped}
-      className="relative h-full w-full cursor-pointer rounded-lg border border-[var(--grid)] bg-[var(--slate)] text-left focus-visible:outline-2 focus-visible:outline-[var(--amber)] focus-visible:outline-offset-2 transition-all duration-200 hover:border-[var(--phosphor)]/60 hover:shadow-[0_0_20px_rgba(0,230,118,0.18)]"
+      className="station-card-button relative h-full w-full cursor-pointer rounded-lg border border-[var(--grid)] bg-[var(--slate)] text-left focus-visible:outline-2 focus-visible:outline-[var(--amber)] focus-visible:outline-offset-2 transition-all duration-200 hover:border-[var(--phosphor)]/60 hover:shadow-[0_0_20px_rgba(0,230,118,0.18)]"
       style={{ transformStyle: "preserve-3d" }}
     >
       <motion.div
@@ -145,35 +146,23 @@ function FlipCard({ station, index, isFlipped, onToggleFlip, isStatic = false }:
         transition={{ duration: 0.5, type: "spring", stiffness: 220, damping: 20 }}
       >
         {/* Front Face: Visual radar & station ID */}
-        <div
-          className="absolute inset-0 h-full w-full overflow-hidden rounded-lg bg-[var(--slate)] p-3 flex flex-col justify-between"
-          style={{ backfaceVisibility: "hidden" }}
-        >
-          <div className="flex items-center justify-between border-b border-[var(--grid)] pb-1.5">
-            <span className="font-mono text-[10px] font-bold text-[var(--phosphor)] tracking-wider">
-              {station.id}
-            </span>
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--phosphor)] pulse-indicator" />
+        <div className="station-card-face" style={{ backfaceVisibility: "hidden" }}>
+          <Image
+            src={station.imageSrc}
+            alt=""
+            fill
+            sizes="(max-width: 380px) 86vw, (max-width: 700px) 46vw, (max-width: 940px) 23vw, 160px"
+            className="station-card-image"
+          />
+          <div className="station-card-vignette" aria-hidden="true" />
+          <div className="station-card-header">
+            <span className="station-card-id">{station.id}</span>
+            <span className="station-card-sector" title={station.sector}>{station.sector}</span>
           </div>
-
-          <div className="relative w-full h-[95px] my-1.5 rounded overflow-hidden bg-[var(--obsidian)] border border-[var(--grid)]">
-            <Image
-              src={station.imageSrc}
-              alt=""
-              fill
-              sizes="(max-width: 768px) 50vw, 200px"
-              className="object-cover opacity-90 group-hover:opacity-100 transition-opacity"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[var(--slate)] via-transparent to-transparent opacity-60" />
-          </div>
-
-          <div className="flex flex-col">
-            <span className="font-display font-bold text-xs uppercase text-[var(--titanium)] truncate">
-              {shortName}
-            </span>
-            <span className="font-mono text-[8px] text-[var(--steel)] tracking-tight">
-              {station.freq}
-            </span>
+          <div className="station-card-footer">
+            <strong className="station-card-name" title={shortName}>{shortName}</strong>
+            <span className="station-card-frequency">{station.freq}</span>
+            <span className="station-card-status" title={station.status}>{station.status}</span>
           </div>
         </div>
 
@@ -189,7 +178,7 @@ function FlipCard({ station, index, isFlipped, onToggleFlip, isStatic = false }:
               </span>
               <span className="font-mono text-[8px] text-[var(--steel)]">0{index + 1}/08</span>
             </div>
-            <p className="mt-2 font-mono text-[9px] text-[var(--titanium)] leading-snug">
+            <p className="station-card-clue mt-2 font-mono text-[9px] text-[var(--titanium)] leading-snug">
               {station.clue}
             </p>
           </div>
@@ -197,11 +186,11 @@ function FlipCard({ station, index, isFlipped, onToggleFlip, isStatic = false }:
           <div className="space-y-1 border-t border-[var(--grid)] pt-1.5 text-[8px] font-mono">
             <div className="flex justify-between text-[var(--steel)]">
               <span>BAND:</span>
-              <span className="text-[var(--titanium)]">{station.bandwidth}</span>
+              <span className="station-card-value text-[var(--titanium)]">{station.bandwidth}</span>
             </div>
             <div className="flex justify-between text-[var(--steel)]">
               <span>STATE:</span>
-              <span className="text-[var(--phosphor)] font-semibold">{station.status}</span>
+              <span className="station-card-value text-[var(--phosphor)] font-semibold">{station.status}</span>
             </div>
           </div>
         </div>
@@ -247,27 +236,49 @@ function OrbitStationCard({
   const y = useTransform(progress, [0, 1], [gridY + Math.cos(initialAngle) * 4, gridY]);
   const rotationStart = ((index % columns) - (columns - 1) / 2) * 1.5;
   const rotate = useTransform(progress, [0, 1], [rotationStart, 0]);
+  const revealVariants = {
+    hidden: { opacity: 0, y: 28, scale: 0.94 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.45, delay: index * 0.06, ease: "easeOut" as const },
+    },
+  };
 
   return (
     <motion.div
+      variants={revealVariants}
+      className="station-card-reveal"
       style={{
-        x,
-        y,
-        rotate,
         position: "absolute",
         width: CARD_WIDTH,
         height: CARD_HEIGHT,
-        transformStyle: "preserve-3d",
-        perspective: "1000px",
+        left: "50%",
+        top: "50%",
+        marginLeft: -CARD_WIDTH / 2,
+        marginTop: -CARD_HEIGHT / 2,
       }}
-      className="group focus:outline-none"
     >
-      <FlipCard
-        station={station}
-        index={index}
-        isFlipped={isFlipped}
-        onToggleFlip={onToggleFlip}
-      />
+      <motion.div
+        style={{
+          x,
+          y,
+          rotate,
+          position: "absolute",
+          inset: 0,
+          transformStyle: "preserve-3d",
+          perspective: "1000px",
+        }}
+        className="group focus:outline-none"
+      >
+        <FlipCard
+          station={station}
+          index={index}
+          isFlipped={isFlipped}
+          onToggleFlip={onToggleFlip}
+        />
+      </motion.div>
     </motion.div>
   );
 }
@@ -385,14 +396,15 @@ function InteractiveStationLayout({
   className?: string;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { once: true, amount: 0.08 });
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
   });
   const morphProgress = useTransform(scrollYProgress, [0, 0.45], [0, 1]);
-  const smoothMorph = useSpring(morphProgress, { stiffness: 45, damping: 20 });
+  const smoothMorph = useSpring(morphProgress, { stiffness: 180, damping: 26, mass: 0.5 });
   const rotationProgress = useTransform(scrollYProgress, [0.45, 1], [0, 180]);
-  const smoothRotation = useSpring(rotationProgress, { stiffness: 45, damping: 20 });
+  const smoothRotation = useSpring(rotationProgress, { stiffness: 180, damping: 26, mass: 0.5 });
   const compassRotation = useTransform(smoothRotation, (rotation) => rotation * 0.4);
   const total = stations.length;
   const columns = Math.min(total, 4) || 1;
@@ -400,19 +412,24 @@ function InteractiveStationLayout({
   return (
     <div
       ref={containerRef}
-      className={cn("scroll-morph-section relative z-0 w-full min-h-[220vh] bg-[var(--obsidian)]", className)}
+      className={cn("scroll-morph-section relative z-0 w-full min-h-[145vh] bg-[var(--obsidian)]", className)}
       role="region"
       aria-label="Interactive 8-node tactical communications matrix"
     >
-      <Image
-        className="section-backdrop backdrop-medium"
-        src="/images/backdrop-signal-nodes.webp"
-        alt=""
-        aria-hidden="true"
-        fill
-        sizes="100vw"
-      />
-      <div className="sticky top-0 h-[100dvh] min-h-[620px] w-full overflow-hidden flex flex-col items-center justify-center">
+      <motion.div
+        className="sticky top-0 h-[100dvh] min-h-[620px] w-full overflow-hidden flex flex-col items-center justify-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+      >
+        <Image
+          className="section-backdrop backdrop-medium"
+          src="/images/backdrop-signal-nodes.webp"
+          alt=""
+          aria-hidden="true"
+          fill
+          sizes="100vw"
+        />
         {/* Subtle background grid pattern */}
         <div
           className="absolute inset-0 pointer-events-none opacity-25"
@@ -451,7 +468,12 @@ function InteractiveStationLayout({
         </div>
 
         {/* Interactive Station Flip Cards Matrix */}
-        <div className="relative w-full h-full flex items-center justify-center">
+        <motion.div
+          className="relative w-full h-full flex items-center justify-center"
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          variants={{ hidden: {}, visible: {} }}
+        >
           {stations.map((station, index) => (
             <OrbitStationCard
               key={station.id}
@@ -464,7 +486,7 @@ function InteractiveStationLayout({
               onToggleFlip={() => onToggleFlip(station.id)}
             />
           ))}
-        </div>
+        </motion.div>
 
         {/* Bottom Legend */}
         <div className="absolute bottom-6 z-20 flex items-center justify-center gap-6 font-mono text-[10px] text-[var(--steel)] tracking-widest uppercase pointer-events-none">
@@ -476,7 +498,7 @@ function InteractiveStationLayout({
           </span>
           <span className="text-[var(--titanium)]">CLICK CARD TO FLIP</span>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
