@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { Countdown } from "@/components/countdown";
 import { EventSchema } from "@/components/event-schema";
 import { NetworkVisual } from "@/components/network-visual";
@@ -103,9 +102,9 @@ export default function HomePage() {
               Two investigations. One day. A lost drone signal and a communications network with a story of its own.
             </p>
             <div className="hero-actions">
-              <Link className="button button-primary" href="/register">
+              <a className="button button-primary" href={event.googleFormUrl} target="_blank" rel="noopener noreferrer">
                 REGISTER YOUR TEAM <span aria-hidden="true">↗</span>
-              </Link>
+              </a>
               <a className="text-link" href="#corridor">
                 READ THE BRIEF <span aria-hidden="true">↓</span>
               </a>
@@ -147,9 +146,9 @@ export default function HomePage() {
           >
             <div className="flex flex-col items-center text-center max-w-2xl mx-auto space-y-4">
               <span className="classified-badge">TRANSMISSION DECRYPTED // MISSION OVERVIEW</span>
-              <h3 className="font-display font-extrabold text-3xl md:text-5xl text-[var(--titanium)] uppercase">
+              <h2 className="font-display font-extrabold text-3xl md:text-5xl text-[var(--titanium)] uppercase">
                 A Tactical Defence <span className="text-[var(--phosphor)]">Investigation</span>
-              </h3>
+              </h2>
               <p className="font-sans text-xs md:text-sm text-[var(--steel)] leading-relaxed">
                 Two synchronized operations. One locked day. Reconstruct the lost telemetry of the GHATAK rescue drone, then untangle a distributed 8-node network to locate the compromised source before time runs out.
               </p>
@@ -180,7 +179,7 @@ export default function HomePage() {
                 <div><span>02</span><strong>INVESTIGATE</strong><small>Compare clues with context.</small></div>
                 <div><span>03</span><strong>SOLVE</strong><small>Support your call with proof.</small></div>
               </div>
-              <div className="mission-metrics" aria-label="Event snapshot">
+              <div className="mission-metrics" role="group" aria-label="Event snapshot">
                 <div><strong>02</strong><small>INVESTIGATIONS</small></div>
                 <div><strong>05</strong><small>MAX TEAM SIZE</small></div>
                 <div><strong>{String(event.networkNodes).padStart(2, "0")}</strong><small>NETWORK STATIONS</small></div>
@@ -344,7 +343,7 @@ export default function HomePage() {
               <h2 id="sponsors-title">Sponsors &amp; partners</h2>
               <p>Partner channels and technical co-sponsors will appear here after confirmation.</p>
             </div>
-            <div className="sponsor-placeholders" aria-label="Sponsor placeholders">
+            <div className="sponsor-placeholders" role="group" aria-label="Sponsor placeholders">
               {["01", "02", "03"].map((slot) => (
                 <div key={slot} data-reveal>
                   <span>PARTNER / {slot}</span>
@@ -367,9 +366,9 @@ export default function HomePage() {
             </div>
             <div className="prize-cta-action">
               <p>THE NAME IS LOCKED.<br /><span>THE DATE IS SET.</span></p>
-              <Link className="button button-primary" href="/register">
+              <a className="button button-primary" href={event.googleFormUrl} target="_blank" rel="noopener noreferrer">
                 ASSEMBLE YOUR TEAM <span aria-hidden="true">↗</span>
-              </Link>
+              </a>
             </div>
           </div>
         </section>

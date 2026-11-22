@@ -8,6 +8,20 @@ export function MissionMotion() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    const animationObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          entry.target.classList.toggle("animation-paused", !entry.isIntersecting);
+        });
+      },
+      { rootMargin: "100px" },
+    );
+    document
+      .querySelectorAll(
+        ".orbit-ring, .hero-drone-art, .hero-route-art, .round-route-image, .network-flow, .network-node-glow, .twist-scanline, .twist-status strong, .pulse-indicator",
+      )
+      .forEach((element) => animationObserver.observe(element));
+
     gsap.registerPlugin(ScrollTrigger);
     const isMobile = window.innerWidth <= 768;
 
@@ -90,7 +104,10 @@ export function MissionMotion() {
       }
     });
 
-    return () => context.revert();
+    return () => {
+      animationObserver.disconnect();
+      context.revert();
+    };
   }, []);
 
   return null;

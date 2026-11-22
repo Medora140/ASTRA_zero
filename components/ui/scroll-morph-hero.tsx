@@ -8,6 +8,7 @@ import {
   useTransform,
   useSpring,
   useReducedMotion,
+  type MotionValue,
 } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -110,13 +111,6 @@ export const NETWORK_STATIONS: StationData[] = [
 interface FlipCardProps {
   station: StationData;
   index: number;
-  target?: {
-    x: number;
-    y: number;
-    rotation: number;
-    scale: number;
-    opacity: number;
-  };
   isFlipped: boolean;
   onToggleFlip: () => void;
   isStatic?: boolean;
@@ -125,21 +119,21 @@ interface FlipCardProps {
 const CARD_WIDTH = 135;
 const CARD_HEIGHT = 185;
 
-function FlipCard({ station, index, target, isFlipped, onToggleFlip, isStatic = false }: FlipCardProps) {
+function FlipCard({ station, index, isFlipped, onToggleFlip, isStatic = false }: FlipCardProps) {
   const cardId = useId();
+  const shortName = station.name
+    .replace("OUTPOST ", "")
+    .replace("RELAY ", "")
+    .replace("GATEWAY ", "")
+    .replace("TERMINAL ", "")
+    .replace("STATION ", "");
 
   const cardContent = (
     <button
       type="button"
       id={cardId}
       onClick={onToggleFlip}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onToggleFlip();
-        }
-      }}
-      aria-label={`Station ${station.id} - ${station.name}. ${isFlipped ? "Showing details. Click to flip to front." : "Click to view dossier."}`}
+      aria-label={`${station.id} ${shortName}. ${isFlipped ? "Dossier open; activate to show station image." : "Activate to view dossier."}`}
       aria-expanded={isFlipped}
       className="relative h-full w-full cursor-pointer rounded-lg border border-[var(--grid)] bg-[var(--slate)] text-left focus-visible:outline-2 focus-visible:outline-[var(--amber)] focus-visible:outline-offset-2 transition-all duration-200 hover:border-[var(--phosphor)]/60 hover:shadow-[0_0_20px_rgba(0,230,118,0.18)]"
       style={{ transformStyle: "preserve-3d" }}
@@ -175,7 +169,7 @@ function FlipCard({ station, index, target, isFlipped, onToggleFlip, isStatic = 
 
           <div className="flex flex-col">
             <span className="font-display font-bold text-xs uppercase text-[var(--titanium)] truncate">
-              {station.name.replace("OUTPOST ", "").replace("RELAY ", "").replace("GATEWAY ", "").replace("TERMINAL ", "").replace("STATION ", "")}
+              {shortName}
             </span>
             <span className="font-mono text-[8px] text-[var(--steel)] tracking-tight">
               {station.freq}
@@ -217,27 +211,49 @@ function FlipCard({ station, index, target, isFlipped, onToggleFlip, isStatic = 
 
   if (isStatic) {
     return (
-      <div className="h-[210px] w-full group focus:outline-none" style={{ perspective: "1000px" }}>
+      <div className="station-card group focus:outline-none" style={{ perspective: "1000px" }}>
         {cardContent}
       </div>
     );
   }
 
+  return cardContent;
+}
+
+function OrbitStationCard({
+  station,
+  index,
+  total,
+  columns,
+  progress,
+  isFlipped,
+  onToggleFlip,
+}: {
+  station: StationData;
+  index: number;
+  total: number;
+  columns: number;
+  progress: MotionValue<number>;
+  isFlipped: boolean;
+  onToggleFlip: () => void;
+}) {
+  const initialAngle = (index / total) * Math.PI * 2;
+  const column = index % columns;
+  const row = Math.floor(index / columns);
+  const rows = Math.ceil(total / columns);
+  const gridX = (column - (columns - 1) / 2) * (CARD_WIDTH + 24);
+  const gridY = (row - (rows - 1) / 2) * (CARD_HEIGHT + 20) + 35;
+  const x = useTransform(progress, [0, 1], [gridX + Math.sin(initialAngle) * 4, gridX]);
+  const y = useTransform(progress, [0, 1], [gridY + Math.cos(initialAngle) * 4, gridY]);
+  const rotationStart = ((index % columns) - (columns - 1) / 2) * 1.5;
+  const rotate = useTransform(progress, [0, 1], [rotationStart, 0]);
+
   return (
     <motion.div
-      animate={{
-        x: target?.x ?? 0,
-        y: target?.y ?? 0,
-        rotate: target?.rotation ?? 0,
-        scale: target?.scale ?? 1,
-        opacity: target?.opacity ?? 1,
-      }}
-      transition={{
-        type: "spring",
-        stiffness: 45,
-        damping: 18,
-      }}
       style={{
+        x,
+        y,
+        rotate,
         position: "absolute",
         width: CARD_WIDTH,
         height: CARD_HEIGHT,
@@ -246,7 +262,12 @@ function FlipCard({ station, index, target, isFlipped, onToggleFlip, isStatic = 
       }}
       className="group focus:outline-none"
     >
-      {cardContent}
+      <FlipCard
+        station={station}
+        index={index}
+        isFlipped={isFlipped}
+        onToggleFlip={onToggleFlip}
+      />
     </motion.div>
   );
 }
@@ -258,75 +279,40 @@ export function ScrollMorphHero({
   stations?: StationData[];
   className?: string;
 }) {
-  const containerRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
   const [flippedCards, setFlippedCards] = useState<Record<string, boolean>>({});
-  const [mounted, setMounted] = useState(false);
-  const [isNarrowScreen, setIsNarrowScreen] = useState(false);
-  const [containerDimensions, setContainerDimensions] = useState({ width: 1200, height: 700 });
+  const [isDesktopInteractive, setIsDesktopInteractive] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    const updateSize = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      setIsNarrowScreen(width < 1024);
-      if (containerRef.current) {
-        setContainerDimensions({
-          width: containerRef.current.clientWidth || width,
-          height: containerRef.current.clientHeight || height,
-        });
-      }
-    };
+    const breakpoint = Number.parseFloat(
+      window
+        .getComputedStyle(document.documentElement)
+        .getPropertyValue("--desktop-layout-breakpoint"),
+    );
+    const desktopQuery = window.matchMedia(`(min-width: ${breakpoint + 1}px)`);
+    const updateSize = () => setIsDesktopInteractive(desktopQuery.matches);
     updateSize();
     window.addEventListener("resize", updateSize);
+    desktopQuery.addEventListener("change", updateSize);
 
-    if (typeof window !== "undefined") {
-      gsap.registerPlugin(ScrollTrigger);
-      const timer = setTimeout(() => ScrollTrigger.refresh(), 200);
-      return () => {
-        clearTimeout(timer);
-        window.removeEventListener("resize", updateSize);
-      };
-    }
-
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
-  });
-
-  const morphProgress = useTransform(scrollYProgress, [0, 0.45], [0, 1]);
-  const smoothMorph = useSpring(morphProgress, { stiffness: 45, damping: 20 });
-
-  const rotationProgress = useTransform(scrollYProgress, [0.45, 1], [0, 180]);
-  const smoothRotation = useSpring(rotationProgress, { stiffness: 45, damping: 20 });
-
-  const [morphValue, setMorphValue] = useState(0);
-  const [rotValue, setRotValue] = useState(0);
-
-  useEffect(() => {
-    const unsubMorph = smoothMorph.on("change", setMorphValue);
-    const unsubRot = smoothRotation.on("change", setRotValue);
+    gsap.registerPlugin(ScrollTrigger);
+    const timer = setTimeout(() => ScrollTrigger.refresh(), 200);
     return () => {
-      unsubMorph();
-      unsubRot();
+      clearTimeout(timer);
+      window.removeEventListener("resize", updateSize);
+      desktopQuery.removeEventListener("change", updateSize);
     };
-  }, [smoothMorph, smoothRotation]);
+  }, []);
 
   const toggleFlip = (id: string) => {
     setFlippedCards((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const total = stations.length;
-
   // Responsive Grid for Mobile/Tablet or Reduced Motion
-  if (mounted && (shouldReduceMotion || isNarrowScreen)) {
+  if (!isDesktopInteractive || shouldReduceMotion) {
     return (
       <section
-        className={cn("w-full bg-[var(--obsidian)] border-y border-[var(--grid)] py-14 sm:py-20 image-section", className)}
+        className={cn("scroll-morph-section w-full bg-[var(--obsidian)] border-y border-[var(--grid)] py-14 sm:py-20", className)}
         aria-label="Communication network stations overview"
       >
         <Image
@@ -350,7 +336,7 @@ export function ScrollMorphHero({
             </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5">
+          <div className="station-grid grid grid-cols-1 min-[381px]:grid-cols-2 min-[701px]:grid-cols-4 gap-3 sm:gap-5">
             {stations.map((station, i) => (
               <FlipCard
                 key={station.id}
@@ -377,14 +363,45 @@ export function ScrollMorphHero({
     );
   }
 
-  // Desktop interactive scroll-driven morph (>= 1024px)
-  const circleRadius = Math.min(containerDimensions.width * 0.32, 280);
-  const arcRadius = Math.min(containerDimensions.width * 0.42, 380);
+  return (
+    <InteractiveStationLayout
+      stations={stations}
+      flippedCards={flippedCards}
+      onToggleFlip={toggleFlip}
+      className={className}
+    />
+  );
+}
+
+function InteractiveStationLayout({
+  stations,
+  flippedCards,
+  onToggleFlip,
+  className,
+}: {
+  stations: StationData[];
+  flippedCards: Record<string, boolean>;
+  onToggleFlip: (id: string) => void;
+  className?: string;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  });
+  const morphProgress = useTransform(scrollYProgress, [0, 0.45], [0, 1]);
+  const smoothMorph = useSpring(morphProgress, { stiffness: 45, damping: 20 });
+  const rotationProgress = useTransform(scrollYProgress, [0.45, 1], [0, 180]);
+  const smoothRotation = useSpring(rotationProgress, { stiffness: 45, damping: 20 });
+  const compassRotation = useTransform(smoothRotation, (rotation) => rotation * 0.4);
+  const total = stations.length;
+  const columns = Math.min(total, 4) || 1;
 
   return (
     <div
       ref={containerRef}
-      className={cn("relative w-full h-[220vh] bg-[var(--obsidian)] image-section", className)}
+      className={cn("scroll-morph-section relative z-0 w-full min-h-[220vh] bg-[var(--obsidian)]", className)}
+      role="region"
       aria-label="Interactive 8-node tactical communications matrix"
     >
       <Image
@@ -395,7 +412,7 @@ export function ScrollMorphHero({
         fill
         sizes="100vw"
       />
-      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden flex flex-col items-center justify-center">
+      <div className="sticky top-0 h-[100dvh] min-h-[620px] w-full overflow-hidden flex flex-col items-center justify-center">
         {/* Subtle background grid pattern */}
         <div
           className="absolute inset-0 pointer-events-none opacity-25"
@@ -417,15 +434,15 @@ export function ScrollMorphHero({
             The Eight <span className="text-[var(--phosphor)]">Stations</span>
           </h2>
           <p className="text-[var(--steel)] text-xs md:text-sm font-sans mt-2 max-w-lg">
-            Eight interconnected nodes carry messages through the network. Scroll to rotate the topology ring; click any card to inspect its dossier.
+            Eight interconnected nodes carry messages through the network. Scroll to align the topology matrix; click any card to inspect its dossier.
           </p>
         </div>
 
         {/* Orbit Crosshair & Compass */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
-          <div
-            className="w-[520px] h-[520px] rounded-full border border-[var(--grid)]/70"
-            style={{ transform: `rotate(${rotValue * 0.4}deg)` }}
+          <motion.div
+            className="w-[min(520px,70vw)] aspect-square rounded-full border border-[var(--grid)]/70"
+            style={{ rotate: compassRotation }}
           />
           <div className="absolute w-[360px] h-[360px] rounded-full border border-dashed border-[var(--phosphor)]/30" />
           <div className="absolute font-mono text-[10px] text-[var(--steel)] tracking-widest uppercase">
@@ -435,37 +452,18 @@ export function ScrollMorphHero({
 
         {/* Interactive Station Flip Cards Matrix */}
         <div className="relative w-full h-full flex items-center justify-center">
-          {stations.map((station, i) => {
-            const initialAngle = (i / total) * Math.PI * 2;
-            const circleX = Math.cos(initialAngle) * circleRadius;
-            const circleY = Math.sin(initialAngle) * circleRadius + 20;
-
-            const arcAngle = ((i - (total - 1) / 2) / total) * (Math.PI * 0.85);
-            const arcX = Math.sin(arcAngle) * arcRadius;
-            const arcY = Math.cos(arcAngle) * (arcRadius * 0.45) + 160;
-
-            const currentX = circleX + (arcX - circleX) * morphValue;
-            const currentY = circleY + (arcY - circleY) * morphValue;
-            const currentRotation =
-              ((arcAngle * 180) / Math.PI) * morphValue + (1 - morphValue) * ((initialAngle * 180) / Math.PI - 90);
-
-            return (
-              <FlipCard
-                key={station.id}
-                station={station}
-                index={i}
-                target={{
-                  x: currentX,
-                  y: currentY,
-                  rotation: currentRotation * 0.45,
-                  scale: 1,
-                  opacity: 1,
-                }}
-                isFlipped={Boolean(flippedCards[station.id])}
-                onToggleFlip={() => toggleFlip(station.id)}
-              />
-            );
-          })}
+          {stations.map((station, index) => (
+            <OrbitStationCard
+              key={station.id}
+              station={station}
+              index={index}
+              total={total}
+              columns={columns}
+              progress={smoothMorph}
+              isFlipped={Boolean(flippedCards[station.id])}
+              onToggleFlip={() => onToggleFlip(station.id)}
+            />
+          ))}
         </div>
 
         {/* Bottom Legend */}

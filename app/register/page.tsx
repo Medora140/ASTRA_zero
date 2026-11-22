@@ -131,7 +131,7 @@ export default function RegisterPage() {
             </aside>
           </div>
           <p className="registration-fineprint">
-            <span>NOTE</span> The participant Google Form link is pending. Schedule times, venue ({event.venue.shortLabel}), guest, and sponsor details will be updated when confirmed.
+            <span>NOTE</span> Registration is submitted through the official Google Form. Schedule times, venue ({event.venue.shortLabel}), guest, and sponsor details will be updated when confirmed.
           </p>
         </div>
       </main>

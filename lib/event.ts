@@ -1,4 +1,7 @@
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://astra-zero-hour.vercel.app";
+const googleFormUrl =
+  process.env.NEXT_PUBLIC_GOOGLE_FORM_URL ||
+  "https://docs.google.com/forms/d/e/1FAIpQLSclhBmm_Cs_fPpo4LxeDW_sodyJm7Wc2g6FgIWvlj9wvtjxZA/viewform?usp=publish-editor";
 
 export const event = {
   name: "ASTRA: ZERO HOUR",
@@ -18,8 +21,7 @@ export const event = {
     shortLabel: "BMSIT&M · BENGALURU",
   },
   siteUrl,
-  // Keep empty until ASTRA publishes the participant Google Form.
-  googleFormUrl: process.env.NEXT_PUBLIC_GOOGLE_FORM_URL || "",
+  googleFormUrl,
 } as const;
 
 export const sections = [

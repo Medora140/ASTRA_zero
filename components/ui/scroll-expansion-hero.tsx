@@ -104,10 +104,11 @@ export function ScrollExpansionHero({
   return (
     <div
       ref={containerRef}
-      className={cn("relative w-full h-[150vh] sm:h-[180vh] md:h-[220vh] bg-[var(--obsidian)]", className)}
+      className={cn("relative z-0 w-full min-h-[150vh] sm:min-h-[180vh] md:min-h-[220vh] overflow-x-clip bg-[var(--obsidian)]", className)}
+      role="region"
       aria-label="Interactive tactical mission corridor"
     >
-      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden flex flex-col items-center justify-center">
+      <div className="sticky top-0 h-[100dvh] min-h-[560px] w-full overflow-hidden flex flex-col items-center justify-center">
         {/* Ambient tactical background */}
         <motion.div
           className="absolute inset-0 pointer-events-none z-0"

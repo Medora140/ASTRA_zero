@@ -38,7 +38,7 @@ export function Countdown() {
   ] as const;
 
   return (
-    <div className="countdown" aria-label={`${remaining.days} days until the event`}>
+    <div className="countdown" role="timer" aria-label={`${remaining.days} days until the event`}>
       {units.map(([value, label]) => (
         <span className="countdown-unit" key={label}>
           <strong>{String(value).padStart(2, "0")}</strong><small>{label}</small>

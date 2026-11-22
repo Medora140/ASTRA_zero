@@ -8,28 +8,32 @@ export function SiteNav() {
   const [activeSection, setActiveSection] = useState<string>("");
 
   useEffect(() => {
-    const handleScroll = () => {
-      const sectionElements = sections.map((sec) => {
-        const id = sec.href.replace("/#", "");
-        return { id, href: sec.href, el: document.getElementById(id) };
+    const observedSections = sections
+      .flatMap((section) => {
+        const element = document.getElementById(section.href.replace("/#", ""));
+        return element ? [{ href: section.href, element }] : [];
       });
+    const sectionByElement = new Map(
+      observedSections.map(({ href, element }) => [element, href]),
+    );
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort(
+            (a, b) =>
+              Math.abs(a.boundingClientRect.top) -
+              Math.abs(b.boundingClientRect.top),
+          );
+        const target = visible[0]?.target;
+        const href = target instanceof HTMLElement ? sectionByElement.get(target) : undefined;
+        if (href) setActiveSection(href);
+      },
+      { rootMargin: "-18% 0px -68% 0px", threshold: 0 },
+    );
 
-      const scrollPosition = window.scrollY + 140;
-      for (let i = sectionElements.length - 1; i >= 0; i--) {
-        const item = sectionElements[i];
-        if (item?.el && item.el.offsetTop <= scrollPosition) {
-          setActiveSection(item.href);
-          return;
-        }
-      }
-      if (window.scrollY < 300) {
-        setActiveSection("");
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
+    observedSections.forEach(({ element }) => observer.observe(element));
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -51,7 +55,7 @@ export function SiteNav() {
         ))}
       </nav>
       <details className="mobile-nav">
-        <summary aria-label="Toggle navigation menu">
+        <summary aria-label="Navigation menu">
           <span className="sr-only">Navigation menu</span>
           <span className="hamburger" aria-hidden="true"><i /><i /><i /></span>
         </summary>
