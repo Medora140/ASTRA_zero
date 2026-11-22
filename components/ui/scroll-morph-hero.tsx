@@ -130,23 +130,34 @@ function FlipCard({ station, index, isFlipped, onToggleFlip, isStatic = false }:
     .replace("STATION ", "");
 
   const cardContent = (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       id={cardId}
       onClick={onToggleFlip}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onToggleFlip();
+        }
+      }}
       aria-label={`${station.id} ${shortName}. ${isFlipped ? "Dossier open; activate to show station image." : "Activate to view dossier."}`}
-      aria-expanded={isFlipped}
-      className="station-card-button relative h-full w-full cursor-pointer rounded-lg border border-[var(--grid)] bg-[var(--slate)] text-left focus-visible:outline-2 focus-visible:outline-[var(--amber)] focus-visible:outline-offset-2 transition-all duration-200 hover:border-[var(--phosphor)]/60 hover:shadow-[0_0_20px_rgba(0,230,118,0.18)]"
-      style={{ transformStyle: "preserve-3d" }}
+      aria-pressed={isFlipped}
+      className="station-card-button relative h-full w-full cursor-pointer rounded-lg text-left focus-visible:outline-2 focus-visible:outline-[var(--amber)] focus-visible:outline-offset-2"
+      style={{ perspective: "1000px" }}
     >
       <motion.div
         className="relative h-full w-full"
         style={{ transformStyle: "preserve-3d" }}
+        initial={false}
         animate={{ rotateY: isFlipped ? 180 : 0 }}
-        transition={{ duration: 0.5, type: "spring", stiffness: 220, damping: 20 }}
+        transition={{ duration: 0.6, ease: [0.4, 0.2, 0.2, 1] }}
       >
         {/* Front Face: Visual radar & station ID */}
-        <div className="station-card-face" style={{ backfaceVisibility: "hidden" }}>
+        <div
+          className="station-card-face border border-[var(--grid)]"
+          style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "rotateY(0deg)" }}
+        >
           <Image
             src={station.imageSrc}
             alt=""
@@ -169,7 +180,7 @@ function FlipCard({ station, index, isFlipped, onToggleFlip, isStatic = false }:
         {/* Back Face: Tactical telemetry context */}
         <div
           className="absolute inset-0 h-full w-full overflow-hidden rounded-lg bg-[var(--slate-raised)] p-3 border border-[var(--grid)] flex flex-col justify-between"
-          style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+          style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
         >
           <div>
             <div className="flex items-center justify-between border-b border-[var(--grid)] pb-1">
@@ -195,7 +206,7 @@ function FlipCard({ station, index, isFlipped, onToggleFlip, isStatic = false }:
           </div>
         </div>
       </motion.div>
-    </button>
+    </div>
   );
 
   if (isStatic) {
@@ -335,7 +346,7 @@ export function ScrollMorphHero({
           sizes="100vw"
         />
         <div className="wrap">
-          <div className="mb-10 text-center">
+          <div className="station-intro mb-10 text-center">
             <span className="inline-block px-3 py-1 bg-[var(--slate)] border border-[var(--grid)] text-[var(--phosphor)] font-mono text-[9px] sm:text-[10px] tracking-widest uppercase mb-3">
               OPERATION: COMPROMISED NODE // TOPOLOGY BRIEF
             </span>
@@ -360,7 +371,7 @@ export function ScrollMorphHero({
             ))}
           </div>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4 sm:gap-8 font-mono text-[9px] sm:text-[10px] text-[var(--steel)] tracking-widest uppercase">
+          <div className="station-legend mt-8 flex flex-wrap items-center justify-center gap-4 sm:gap-8 font-mono text-[9px] sm:text-[10px] text-[var(--steel)] tracking-widest uppercase">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-sm bg-[var(--phosphor)]" /> ACTIVE RELAY
             </span>

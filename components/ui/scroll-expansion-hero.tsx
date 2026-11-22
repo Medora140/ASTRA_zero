@@ -104,7 +104,7 @@ export function ScrollExpansionHero({
   return (
     <div
       ref={containerRef}
-      className={cn("relative z-0 w-full min-h-[150vh] sm:min-h-[180vh] md:min-h-[220vh] overflow-x-clip bg-[var(--obsidian)]", className)}
+      className={cn("relative z-0 w-full min-h-[132vh] sm:min-h-[180vh] md:min-h-[220vh] overflow-x-clip bg-[var(--obsidian)]", className)}
       role="region"
       aria-label="Interactive tactical mission corridor"
     >
