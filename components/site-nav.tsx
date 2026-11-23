@@ -15,7 +15,7 @@ export function SiteFooter() {
       </div>
       <div className="footer-meta">
         <span>{event.dateLabel}</span>
-        <Link href="/register">Registration briefing <span aria-hidden="true">↗</span></Link>
+        <Link href="/register">Registration briefing <span aria-hidden="true" className="btn-arrow">↗</span></Link>
         <small>Venue, guest, sponsor, and contact details will be announced.</small>
       </div>
       <div className="footer-bottom"><span>ASTRA CLUB · BMSIT&amp;M</span><span>02 OPERATIONS // 03.12.26</span></div>

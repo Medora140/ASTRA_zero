@@ -36,8 +36,8 @@ export function NetworkVisual({ variant = "brief" }: { variant?: "brief" | "twis
           <desc>All eight stations are shown in the same style. No station is identified as the compromised one.</desc>
           <defs>
             <radialGradient id={`node-glow-${variant}`}>
-              <stop offset="0" stopColor={isTwist ? "#FFB300" : "#00E676"} stopOpacity=".24" />
-              <stop offset="1" stopColor={isTwist ? "#FFB300" : "#00E676"} stopOpacity="0" />
+              <stop offset="0" stopColor={isTwist ? "#c58a45" : "#78866a"} stopOpacity=".24" />
+              <stop offset="1" stopColor={isTwist ? "#c58a45" : "#78866a"} stopOpacity="0" />
             </radialGradient>
           </defs>
           {links.map(([from, to], index) => {

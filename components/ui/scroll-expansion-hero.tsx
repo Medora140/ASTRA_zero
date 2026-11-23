@@ -6,6 +6,7 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { cn } from "@/lib/utils";
+import { event } from "@/lib/event";
 
 export interface ScrollExpansionHeroProps {
   mediaSrc?: string;
@@ -71,11 +72,11 @@ export function ScrollExpansionHero({
       >
         <div className="wrap flex flex-col items-center gap-6 sm:gap-8">
           <div className="text-center">
-            <span className="inline-block px-3 py-1 bg-[var(--slate)] border border-[var(--grid)] text-[var(--phosphor)] font-mono text-[9px] sm:text-[10px] tracking-widest uppercase mb-3">
+            <span className="inline-block px-3 py-1 bg-[var(--slate)] border border-[var(--grid)] text-[var(--phosphor)] font-mono text-[10px] sm:text-[10px] tracking-widest uppercase mb-3">
               {subtitle}
             </span>
             <h2 className="text-3xl sm:text-5xl md:text-6xl font-display font-extrabold tracking-wide uppercase text-[var(--titanium)]">
-              {firstWord} <span className="text-[var(--phosphor)]">{secondWord}</span>
+              {firstWord} <span className="text-[var(--accent)]">{secondWord}</span>
             </h2>
             <p className="text-[var(--amber)] font-mono text-xs tracking-widest mt-2">{date}</p>
           </div>
@@ -89,7 +90,7 @@ export function ScrollExpansionHero({
               className="object-contain sm:object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[var(--obsidian)] via-transparent to-transparent opacity-80" />
-            <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[var(--steel)] font-mono text-[9px] sm:text-[10px]">
+            <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[var(--steel)] font-mono text-[10px] sm:text-[10px]">
               <span>MISSION: INCIDENT RECONSTRUCTION</span>
               <span className="text-[var(--amber)]">TELEMETRY LOCKED</span>
             </div>
@@ -109,21 +110,23 @@ export function ScrollExpansionHero({
       aria-label="Interactive tactical mission corridor"
     >
       <div className="sticky top-0 h-[100dvh] min-h-[560px] w-full overflow-hidden flex flex-col items-center justify-center">
-        {/* Ambient tactical background */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none z-0"
-          style={{ opacity: bgOpacity }}
-          aria-hidden="true"
-        >
-          <Image
-            src={bgImageSrc}
-            alt=""
-            fill
-            sizes="100vw"
-            className="object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[var(--obsidian)]/60 via-transparent to-[var(--obsidian)]/80" />
-        </motion.div>
+        {/* Ambient tactical background (hidden unless NEXT_PUBLIC_SHOW_BACKDROPS=true) */}
+        {event.showBackdrops && (
+          <motion.div
+            className="absolute inset-0 pointer-events-none z-0"
+            style={{ opacity: bgOpacity }}
+            aria-hidden="true"
+          >
+            <Image
+              src={bgImageSrc}
+              alt=""
+              fill
+              sizes="100vw"
+              className="object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-[var(--obsidian)]/60 via-transparent to-[var(--obsidian)]/80" />
+          </motion.div>
+        )}
 
         {/* Central Expanding Tactical Visual Container */}
         <motion.div
@@ -149,7 +152,7 @@ export function ScrollExpansionHero({
               className="absolute inset-0 opacity-25 pointer-events-none"
               style={{
                 backgroundImage:
-                  "linear-gradient(to right, rgba(0, 230, 118, 0.25) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 230, 118, 0.25) 1px, transparent 1px)",
+                  "linear-gradient(to right, rgba(120, 134, 106, 0.25) 1px, transparent 1px), linear-gradient(to bottom, rgba(120, 134, 106, 0.25) 1px, transparent 1px)",
                 backgroundSize: "36px 36px",
               }}
               aria-hidden="true"
@@ -160,7 +163,7 @@ export function ScrollExpansionHero({
           <div className="relative z-20 flex flex-col items-center justify-center text-center px-3 sm:px-6 pointer-events-none select-none w-full max-w-full">
             <motion.p
               style={{ opacity: textOpacity }}
-              className="font-mono text-[8px] sm:text-[10px] md:text-xs tracking-[0.2em] uppercase text-[var(--amber)] mb-2 flex items-center gap-1.5"
+              className="font-mono text-[10px] sm:text-[10px] md:text-xs tracking-[0.2em] uppercase text-[var(--amber)] mb-2 flex items-center gap-1.5"
             >
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--amber)] pulse-indicator" />
               {subtitle}
@@ -175,7 +178,7 @@ export function ScrollExpansionHero({
               </motion.span>
               <motion.span
                 style={{ x: textTranslate, opacity: textOpacity }}
-                className="inline-block text-[var(--phosphor)] drop-shadow-[0_2px_16px_rgba(0,230,118,0.35)]"
+                className="inline-block text-[var(--accent)] drop-shadow-[0_2px_16px_rgba(197,138,69,0.3)]"
               >
                 {secondWord}
               </motion.span>
@@ -188,7 +191,7 @@ export function ScrollExpansionHero({
               <span className="font-mono text-[11px] sm:text-xs md:text-sm tracking-widest text-[var(--titanium)]">
                 {date}
               </span>
-              <span className="font-mono text-[9px] sm:text-[10px] text-[var(--steel)] tracking-widest mt-1">
+              <span className="font-mono text-[10px] sm:text-[10px] text-[var(--steel)] tracking-widest mt-1">
                 {scrollToExpandText}
               </span>
             </motion.div>
@@ -205,16 +208,16 @@ export function ScrollExpansionHero({
           )}
 
           {/* Tactical Corner Crosshairs */}
-          <div className="absolute top-2.5 left-2.5 font-mono text-[8px] sm:text-[10px] text-[var(--phosphor)] tracking-widest opacity-80 select-none">
+          <div className="absolute top-2.5 left-2.5 font-mono text-[10px] sm:text-[10px] text-[var(--phosphor)] tracking-widest opacity-80 select-none">
             ┌ SYS.TRACK // 001
           </div>
-          <div className="absolute top-2.5 right-2.5 font-mono text-[8px] sm:text-[10px] text-[var(--phosphor)] tracking-widest opacity-80 select-none">
+          <div className="absolute top-2.5 right-2.5 font-mono text-[10px] sm:text-[10px] text-[var(--phosphor)] tracking-widest opacity-80 select-none">
             RECON.GRID ┐
           </div>
-          <div className="absolute bottom-2.5 left-2.5 font-mono text-[8px] sm:text-[10px] text-[var(--steel)] tracking-widest opacity-80 select-none">
+          <div className="absolute bottom-2.5 left-2.5 font-mono text-[10px] sm:text-[10px] text-[var(--steel)] tracking-widest opacity-80 select-none">
             └ LAT.2026 // BMSIT&amp;M
           </div>
-          <div className="absolute bottom-2.5 right-2.5 font-mono text-[8px] sm:text-[10px] text-[var(--amber)] tracking-widest opacity-80 select-none">
+          <div className="absolute bottom-2.5 right-2.5 font-mono text-[10px] sm:text-[10px] text-[var(--amber)] tracking-widest opacity-80 select-none">
             SIGNAL: ACTIVE ┘
           </div>
         </motion.div>

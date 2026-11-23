@@ -3,6 +3,9 @@ const googleFormUrl =
   process.env.NEXT_PUBLIC_GOOGLE_FORM_URL ||
   "https://docs.google.com/forms/d/e/1FAIpQLSclhBmm_Cs_fPpo4LxeDW_sodyJm7Wc2g6FgIWvlj9wvtjxZA/viewform?usp=publish-editor";
 
+// Full-section background photos are off by default. Set NEXT_PUBLIC_SHOW_BACKDROPS=true to bring them back.
+const showBackdrops = process.env.NEXT_PUBLIC_SHOW_BACKDROPS === "true";
+
 export const event = {
   name: "ASTRA: ZERO HOUR",
   subtitle: "A Defence Problem-Solving Contest",
@@ -22,6 +25,7 @@ export const event = {
   },
   siteUrl,
   googleFormUrl,
+  showBackdrops,
 } as const;
 
 export const sections = [

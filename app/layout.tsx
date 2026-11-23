@@ -1,7 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Barlow_Condensed, IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
+import { Barlow_Condensed, IBM_Plex_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { event } from "@/lib/event";
+import { TelemetryLines } from "@/components/telemetry-lines";
+import AtcShader from "@/components/ui/atc-shader";
+import ReconBackground from "@/components/recon-background";
 
 const barlowCondensed = Barlow_Condensed({
   subsets: ["latin"],
@@ -17,10 +20,10 @@ const ibmPlexMono = IBM_Plex_Mono({
   display: "swap",
 });
 
-const spaceGrotesk = Space_Grotesk({
+const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-space-grotesk",
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -59,7 +62,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0B0E14",
+  themeColor: "#0b0f0d",
   colorScheme: "dark",
 };
 
@@ -67,12 +70,15 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html
       lang="en"
-      className={`${barlowCondensed.variable} ${ibmPlexMono.variable} ${spaceGrotesk.variable}`}
+      className={`${barlowCondensed.variable} ${ibmPlexMono.variable} ${inter.variable}`}
     >
       <body>
         <a href="#main-content" className="skip-link">
           SKIP TO CONTENT [ESC/TAB]
         </a>
+        <ReconBackground />
+        <AtcShader className="atc-shader-fixed" />
+        <TelemetryLines />
         {children}
       </body>
     </html>

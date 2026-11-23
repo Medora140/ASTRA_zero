@@ -26,15 +26,17 @@ export default function RegisterPage() {
       <MissionMotion />
       <SiteNav />
       <main id="main-content" className="register-page image-section">
-        <Image
-          className="section-backdrop backdrop-medium"
-          src="/images/backdrop-drone-sky.webp"
-          alt=""
-          aria-hidden="true"
-          fill
-          sizes="100vw"
-          priority
-        />
+        {event.showBackdrops && (
+          <Image
+            className="section-backdrop backdrop-medium"
+            src="/images/backdrop-drone-sky.webp"
+            alt=""
+            aria-hidden="true"
+            fill
+            sizes="100vw"
+            priority
+          />
+        )}
         <div className="register-grid" aria-hidden="true" />
         <div className="wrap register-wrap">
           <Link href="/" className="back-link">← RETURN TO MISSION BRIEF</Link>
@@ -52,14 +54,16 @@ export default function RegisterPage() {
 
           <div className="register-columns">
             <section className="registration-checklist image-section" aria-labelledby="checklist-title" data-reveal>
-              <Image
-                className="section-backdrop backdrop-soft"
-                src="/images/backdrop-network-traffic.webp"
-                alt=""
-                aria-hidden="true"
-                fill
-                sizes="(max-width: 700px) 92vw, 52vw"
-              />
+              {event.showBackdrops && (
+                <Image
+                  className="section-backdrop backdrop-soft"
+                  src="/images/backdrop-network-traffic.webp"
+                  alt=""
+                  aria-hidden="true"
+                  fill
+                  sizes="(max-width: 700px) 92vw, 52vw"
+                />
+              )}
               <div className="register-panel-label"><span>FORM 01</span><span>DETAILS TO PREPARE</span></div>
               <h2 id="checklist-title">Before you register</h2>
               <p>The participant Google Form will collect your team details, including your college name.</p>
@@ -78,14 +82,16 @@ export default function RegisterPage() {
             </section>
 
             <aside className="team-brief image-section" aria-labelledby="team-brief-title" data-reveal>
-              <Image
-                className="section-backdrop backdrop-soft"
-                src="/images/backdrop-terrain-map.webp"
-                alt=""
-                aria-hidden="true"
-                fill
-                sizes="(max-width: 700px) 92vw, 42vw"
-              />
+              {event.showBackdrops && (
+                <Image
+                  className="section-backdrop backdrop-soft"
+                  src="/images/backdrop-terrain-map.webp"
+                  alt=""
+                  aria-hidden="true"
+                  fill
+                  sizes="(max-width: 700px) 92vw, 42vw"
+                />
+              )}
               <div className="register-panel-label"><span>ROSTER LIMIT</span><span>01–{String(event.teamLimit).padStart(2, "0")}</span></div>
               <div className="roster-visual" aria-hidden="true">
                 <div className="roster-ring"><span>{String(event.teamLimit).padStart(2, "0")}</span><small>MAX</small></div>
@@ -114,7 +120,7 @@ export default function RegisterPage() {
               </div>
               {isPublishedRegistration ? (
                 <a className="button button-primary register-submit" href={event.googleFormUrl} target="_blank" rel="noopener noreferrer">
-                  OPEN GOOGLE FORM <span aria-hidden="true">↗</span>
+                  OPEN GOOGLE FORM <span aria-hidden="true" className="btn-arrow">↗</span>
                 </a>
               ) : (
                 <button
@@ -127,7 +133,7 @@ export default function RegisterPage() {
                   GOOGLE FORM LINK COMING SOON
                 </button>
               )}
-              <p className="register-return"><Link href="/#rounds">Review the two operations <span aria-hidden="true">↗</span></Link></p>
+              <p className="register-return"><Link href="/#rounds">Review the two operations <span aria-hidden="true" className="btn-arrow">↗</span></Link></p>
             </aside>
           </div>
           <p className="registration-fineprint">

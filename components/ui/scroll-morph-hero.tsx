@@ -14,6 +14,7 @@ import {
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { cn } from "@/lib/utils";
+import { event } from "@/lib/event";
 
 export interface StationData {
   id: string;
@@ -179,22 +180,22 @@ function FlipCard({ station, index, isFlipped, onToggleFlip, isStatic = false }:
 
         {/* Back Face: Tactical telemetry context */}
         <div
-          className="absolute inset-0 h-full w-full overflow-hidden rounded-lg bg-[var(--slate-raised)] p-3 border border-[var(--grid)] flex flex-col justify-between"
+          className="station-card-back absolute inset-0 h-full w-full overflow-hidden rounded-lg bg-[var(--slate-raised)] p-3 border border-[var(--grid)] flex flex-col justify-between"
           style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
         >
           <div>
             <div className="flex items-center justify-between border-b border-[var(--grid)] pb-1">
-              <span className="font-mono text-[9px] font-bold text-[var(--amber)]">
+              <span className="font-mono text-[10px] font-bold text-[var(--amber)]">
                 DOSSIER // {station.id}
               </span>
-              <span className="font-mono text-[8px] text-[var(--steel)]">0{index + 1}/08</span>
+              <span className="font-mono text-[10px] text-[var(--steel)]">0{index + 1}/08</span>
             </div>
-            <p className="station-card-clue mt-2 font-mono text-[9px] text-[var(--titanium)] leading-snug">
+            <p className="station-card-clue mt-2 font-mono text-[10px] text-[var(--titanium)] leading-snug">
               {station.clue}
             </p>
           </div>
 
-          <div className="space-y-1 border-t border-[var(--grid)] pt-1.5 text-[8px] font-mono">
+          <div className="space-y-1 border-t border-[var(--grid)] pt-1.5 text-[10px] font-mono">
             <div className="flex justify-between text-[var(--steel)]">
               <span>BAND:</span>
               <span className="station-card-value text-[var(--titanium)]">{station.bandwidth}</span>
@@ -337,21 +338,23 @@ export function ScrollMorphHero({
         className={cn("scroll-morph-section w-full bg-[var(--obsidian)] border-y border-[var(--grid)] py-14 sm:py-20", className)}
         aria-label="Communication network stations overview"
       >
-        <Image
-          className="section-backdrop backdrop-medium"
-          src="/images/backdrop-signal-nodes.webp"
-          alt=""
-          aria-hidden="true"
-          fill
-          sizes="100vw"
-        />
+        {event.showBackdrops && (
+          <Image
+            className="section-backdrop backdrop-medium"
+            src="/images/backdrop-signal-nodes.webp"
+            alt=""
+            aria-hidden="true"
+            fill
+            sizes="100vw"
+          />
+        )}
         <div className="wrap">
           <div className="station-intro mb-10 text-center">
-            <span className="inline-block px-3 py-1 bg-[var(--slate)] border border-[var(--grid)] text-[var(--phosphor)] font-mono text-[9px] sm:text-[10px] tracking-widest uppercase mb-3">
+            <span className="inline-block px-3 py-1 bg-[var(--slate)] border border-[var(--grid)] text-[var(--phosphor)] font-mono text-[10px] sm:text-[10px] tracking-widest uppercase mb-3">
               OPERATION: COMPROMISED NODE // TOPOLOGY BRIEF
             </span>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-extrabold text-[var(--titanium)] uppercase tracking-wide">
-              The Eight <span className="text-[var(--phosphor)]">Stations</span>
+              The Eight <span className="text-[var(--accent)]">Stations</span>
             </h2>
             <p className="text-[var(--steel)] max-w-xl mx-auto text-xs sm:text-sm font-sans mt-3">
               Eight interconnected nodes carry network transmissions. Tap any station dossier card to flip and inspect telemetry clues.
@@ -371,7 +374,7 @@ export function ScrollMorphHero({
             ))}
           </div>
 
-          <div className="station-legend mt-8 flex flex-wrap items-center justify-center gap-4 sm:gap-8 font-mono text-[9px] sm:text-[10px] text-[var(--steel)] tracking-widest uppercase">
+          <div className="station-legend mt-8 flex flex-wrap items-center justify-center gap-4 sm:gap-8 font-mono text-[10px] sm:text-[10px] text-[var(--steel)] tracking-widest uppercase">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-sm bg-[var(--phosphor)]" /> ACTIVE RELAY
             </span>
@@ -433,20 +436,22 @@ function InteractiveStationLayout({
         animate={{ opacity: 1 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
       >
-        <Image
-          className="section-backdrop backdrop-medium"
-          src="/images/backdrop-signal-nodes.webp"
-          alt=""
-          aria-hidden="true"
-          fill
-          sizes="100vw"
-        />
+        {event.showBackdrops && (
+          <Image
+            className="section-backdrop backdrop-medium"
+            src="/images/backdrop-signal-nodes.webp"
+            alt=""
+            aria-hidden="true"
+            fill
+            sizes="100vw"
+          />
+        )}
         {/* Subtle background grid pattern */}
         <div
           className="absolute inset-0 pointer-events-none opacity-25"
           style={{
             backgroundImage:
-              "linear-gradient(to right, rgba(35, 45, 63, 0.45) 1px, transparent 1px), linear-gradient(to bottom, rgba(35, 45, 63, 0.45) 1px, transparent 1px)",
+              "linear-gradient(to right, rgba(48, 59, 49, 0.45) 1px, transparent 1px), linear-gradient(to bottom, rgba(48, 59, 49, 0.45) 1px, transparent 1px)",
             backgroundSize: "48px 48px",
           }}
           aria-hidden="true"
@@ -459,7 +464,7 @@ function InteractiveStationLayout({
             OPERATION: COMPROMISED NODE // TOPOLOGY BRIEF
           </p>
           <h2 className="text-4xl md:text-5xl font-display font-extrabold uppercase text-[var(--titanium)] tracking-tight">
-            The Eight <span className="text-[var(--phosphor)]">Stations</span>
+            The Eight <span className="text-[var(--accent)]">Stations</span>
           </h2>
           <p className="text-[var(--steel)] text-xs md:text-sm font-sans mt-2 max-w-lg">
             Eight interconnected nodes carry messages through the network. Scroll to align the topology matrix; click any card to inspect its dossier.

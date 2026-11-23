@@ -28,6 +28,7 @@ function SectionBackdrop({
   tone?: "soft" | "medium" | "bright";
   priority?: boolean;
 }) {
+  if (!event.showBackdrops) return null;
   return (
     <Image
       className={`section-backdrop backdrop-${tone}`}
@@ -69,7 +70,7 @@ export default function HomePage() {
             <div className="orbit-ring orbit-three" />
             <Image
               className="hero-route-art"
-              src="/images/flight-route.webp"
+              src="/images/flight-route-amber.webp"
               alt=""
               aria-hidden="true"
               width={697}
@@ -103,10 +104,10 @@ export default function HomePage() {
             </p>
             <div className="hero-actions">
               <a className="button button-primary" href={event.googleFormUrl} target="_blank" rel="noopener noreferrer">
-                REGISTER YOUR TEAM <span aria-hidden="true">↗</span>
+                REGISTER YOUR TEAM <span aria-hidden="true" className="btn-arrow">↗</span>
               </a>
               <a className="text-link" href="#corridor">
-                READ THE BRIEF <span aria-hidden="true">↓</span>
+                READ THE BRIEF <span aria-hidden="true" className="btn-arrow btn-arrow-down">↓</span>
               </a>
             </div>
             <div className="hero-readout">
@@ -147,13 +148,13 @@ export default function HomePage() {
             <div className="flex flex-col items-center text-center max-w-2xl mx-auto space-y-4">
               <span className="classified-badge">TRANSMISSION DECRYPTED // MISSION OVERVIEW</span>
               <h2 className="font-display font-extrabold text-3xl md:text-5xl text-[var(--titanium)] uppercase">
-                A Tactical Defence <span className="text-[var(--phosphor)]">Investigation</span>
+                A Tactical Defence <span className="text-[var(--accent)]">Investigation</span>
               </h2>
               <p className="font-sans text-xs md:text-sm text-[var(--steel)] leading-relaxed">
                 Two synchronized operations. One locked day. Reconstruct the lost telemetry of the GHATAK rescue drone, then untangle a distributed 8-node network to locate the compromised source before time runs out.
               </p>
               <a href="#about" className="button button-primary mt-2">
-                PROCEED TO BRIEFING ROOM <span aria-hidden="true">↓</span>
+                PROCEED TO BRIEFING ROOM <span aria-hidden="true" className="btn-arrow btn-arrow-down">↓</span>
               </a>
             </div>
           </ScrollExpansionHero>
@@ -219,7 +220,7 @@ export default function HomePage() {
                       <div className="flight-grid" aria-hidden="true" />
                       <Image
                         className="round-route-image"
-                        src="/images/flight-route.webp"
+                        src="/images/flight-route-amber.webp"
                         alt=""
                         aria-hidden="true"
                         width={697}
@@ -367,7 +368,7 @@ export default function HomePage() {
             <div className="prize-cta-action">
               <p>THE NAME IS LOCKED.<br /><span>THE DATE IS SET.</span></p>
               <a className="button button-primary" href={event.googleFormUrl} target="_blank" rel="noopener noreferrer">
-                ASSEMBLE YOUR TEAM <span aria-hidden="true">↗</span>
+                ASSEMBLE YOUR TEAM <span aria-hidden="true" className="btn-arrow">↗</span>
               </a>
             </div>
           </div>
