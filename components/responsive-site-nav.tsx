@@ -72,7 +72,6 @@ export function SiteNav() {
           ))}
         </nav>
       </details>
-      <Link className="nav-cta" href="/register">Register <span aria-hidden="true" className="btn-arrow">↗</span></Link>
     </header>
   );
 }

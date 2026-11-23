@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Countdown } from "@/components/countdown";
 import { EventSchema } from "@/components/event-schema";
 import { NetworkVisual } from "@/components/network-visual";
@@ -103,9 +104,9 @@ export default function HomePage() {
               Two investigations. One day. A lost drone signal and a communications network with a story of its own.
             </p>
             <div className="hero-actions">
-              <a className="button button-primary" href={event.googleFormUrl} target="_blank" rel="noopener noreferrer">
+              <Link className="button button-primary" href="/register">
                 REGISTER YOUR TEAM <span aria-hidden="true" className="btn-arrow">↗</span>
-              </a>
+              </Link>
               <a className="text-link" href="#corridor">
                 READ THE BRIEF <span aria-hidden="true" className="btn-arrow btn-arrow-down">↓</span>
               </a>
@@ -130,7 +131,7 @@ export default function HomePage() {
                   href="#guests"
                   aria-label={`View chief guest profile: ${chiefGuest.name}`}
                 >
-                  VIEW PROFILE <span aria-hidden="true" className="btn-arrow btn-arrow-down">↓</span>
+                  VIEW CHIEF GUEST <span aria-hidden="true" className="btn-arrow btn-arrow-down">↓</span>
                 </a>
               </div>
             </div>
@@ -348,8 +349,9 @@ export default function HomePage() {
               </div>
             </figure>
             <div className="chief-copy" data-reveal>
-              <SectionEyebrow code="05">CHIEF GUEST</SectionEyebrow>
-              <h2 id="chief-title">{chiefGuest.name}</h2>
+              <SectionEyebrow code="05">GUEST OF HONOUR</SectionEyebrow>
+              <h2 id="chief-title" className="chief-title">Chief Guest</h2>
+              <p className="chief-name">{chiefGuest.name}</p>
               <p className="chief-role">{chiefGuest.designation}</p>
               <p className="chief-summary">{chiefGuest.summary}</p>
               <dl className="chief-facts">
@@ -368,34 +370,12 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 09: GUEST SPEAKERS */}
-        <section className="people-section section-pad image-section" id="speakers" aria-labelledby="guests-title">
-          <SectionBackdrop src={sectionImages.droneSky} position="right 42%" tone="medium" />
-          <div className="wrap people-grid">
-            <div className="people-copy" data-reveal>
-              <SectionEyebrow code="06">MISSION CONTROL</SectionEyebrow>
-              <h2 id="guests-title">Guest speakers</h2>
-              <p>Additional guest identities and briefing sessions will be announced once confirmed by Mission Control.</p>
-            </div>
-            <article className="placeholder-card guest-placeholder" data-reveal>
-              <span className="placeholder-index">GUEST DOSSIER / PENDING</span>
-              <div className="placeholder-silhouette" aria-hidden="true">?</div>
-              <div>
-                <small>ADDITIONAL SPEAKER</small>
-                <h3>To be announced</h3>
-                <p>Speaker details and operational credentials coming soon.</p>
-              </div>
-              <span className="placeholder-stamp">AWAITING<br />TRANSMISSION</span>
-            </article>
-          </div>
-        </section>
-
         {/* 10: SPONSORS & PARTNERS */}
         <section className="sponsor-section section-pad image-section" id="sponsors" aria-labelledby="sponsors-title">
           <SectionBackdrop src={sectionImages.networkTraffic} position="center 55%" tone="medium" />
           <div className="wrap sponsor-inner">
             <div className="sponsor-heading" data-reveal>
-              <SectionEyebrow code="07">PARTNERSHIP CHANNEL</SectionEyebrow>
+              <SectionEyebrow code="06">PARTNERSHIP CHANNEL</SectionEyebrow>
               <h2 id="sponsors-title">Sponsors &amp; partners</h2>
               <p>Partner channels and technical co-sponsors will appear here after confirmation.</p>
             </div>
@@ -416,7 +396,7 @@ export default function HomePage() {
           <SectionBackdrop src={sectionImages.droneForest} position="center 60%" tone="medium" />
           <div className="wrap prize-cta-inner">
             <div>
-              <SectionEyebrow code="08">REWARDS FOR REASONING</SectionEyebrow>
+              <SectionEyebrow code="07">REWARDS FOR REASONING</SectionEyebrow>
               <p className="prize-pool">{event.prizePool}<span> PRIZE POOL</span></p>
               <p className="prize-small">Award distribution details will be announced during debrief.</p>
             </div>
