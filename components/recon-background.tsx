@@ -4,15 +4,19 @@ import Image from "next/image";
 import { useEffect, useRef } from "react";
 
 /**
- * Fixed site background: the terrain photo plus a drone-camera reticle overlay.
+ * Fixed site background (terrain photo) plus a drone-camera reticle.
  *
- * Layers (inside .site-bg): zoom layer (photo) -> reticle SVG -> dark shade (CSS ::after).
- * The photo is never edited; "optical zoom" is a CSS scale of the photo layer about the
- * target point, so the target stays under the reticle while the lens closes in.
+ * Rendering is deliberately compositor-only so it stays smooth:
+ *  - the reticle is ~15 small elements positioned with `transform` (no per-frame SVG
+ *    repaint or text re-layout); the ring spins via a CSS animation off the main thread
+ *  - the reticle layer sits above the shader, so moving it never forces blend recomposites
+ *  - optical zoom = `scale()` on the photo layer about the target point
+ *  - autofocus defocus = crossfade to a soft (lower-res) copy of the photo instead of a
+ *    full-screen `blur()` filter
  *
- * Cycle: SEARCHING (sweeps) -> approach POI -> TARGET ACQUIRED -> AUTOFOCUS (rectangle
+ * Cycle: SEARCHING (sweeps) -> approach POI -> TARGET ACQUIRED -> AUTOFOCUS (frame
  * contracts, photo zooms, defocus -> focus) -> TRACKING (hold) -> REACQUIRING (zoom out,
- * release) -> SEARCHING elsewhere. State lives in refs; the SVG is updated imperatively.
+ * release) -> SEARCHING elsewhere. State lives in refs; the DOM is updated imperatively.
  */
 
 const IMG_W = 1672;
@@ -27,6 +31,7 @@ const POIS: ReadonlyArray<readonly [number, number]> = [
 
 const ZOOM_MAX = 2.3;
 const HEADER_SAFE = 110; // keep targets out from under the nav
+const FRAME_MS = 1000 / 62; // cap updates at ~60fps (no wasted work on 120/144Hz screens)
 
 type Phase = "scan" | "approach" | "lock" | "zoomIn" | "track" | "zoomOut";
 type StatusText = "SEARCHING" | "TARGET ACQUIRED" | "AUTOFOCUS" | "TRACKING" | "REACQUIRING";
@@ -34,31 +39,31 @@ type StatusText = "SEARCHING" | "TARGET ACQUIRED" | "AUTOFOCUS" | "TRACKING" | "
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const ease = (p: number) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+const half = (v: number) => Math.round(v * 2) / 2; // keeps thin lines crisp
 
 export default function ReconBackground() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const zoomRef = useRef<HTMLDivElement>(null);
-  const svgRef = useRef<SVGSVGElement>(null);
+  const layerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const wrap = wrapRef.current;
     const zoom = zoomRef.current;
-    const svg = svgRef.current;
-    if (!wrap || !zoom || !svg) return;
+    const layer = layerRef.current;
+    if (!wrap || !zoom || !layer) return;
 
-    const q = <T extends Element>(role: string) => svg.querySelector<T>(`[data-r="${role}"]`)!;
-    const rectEl = q<SVGPathElement>("rect");
-    const marksEl = q<SVGPathElement>("marks");
-    const ringG = q<SVGGElement>("ring");
-    const ringOuter = q<SVGCircleElement>("ring-outer");
-    const ringInner = q<SVGCircleElement>("ring-inner");
-    const ringTicks = q<SVGPathElement>("ring-ticks");
-    const crossEl = q<SVGPathElement>("cross");
-    const beamEl = q<SVGLineElement>("beam");
-    const pulseEl = q<SVGCircleElement>("pulse");
-    const statusEl = q<SVGTextElement>("status");
-    const zoomTxt = q<SVGTextElement>("zoomtxt");
+    const q = <T extends Element>(sel: string) => layer.querySelector<T>(sel)!;
+    const qa = <T extends Element>(sel: string) => Array.from(layer.querySelectorAll<T>(sel));
+    const root = q<HTMLDivElement>(".rr");
+    const ringWrap = q<HTMLDivElement>(".rr-ring-wrap");
+    const [cTL, cTR, cBL, cBR] = qa<HTMLElement>(".rr-corner");
+    const [mL, mR, mT, mB] = qa<HTMLElement>(".rr-mark");
+    const beam = q<HTMLElement>(".rr-beam");
+    const pulse = q<HTMLElement>(".rr-pulse");
+    const statusEl = q<HTMLElement>(".rr-status");
+    const zoomTxt = q<HTMLElement>(".rr-zoomtxt");
     const img = wrap.querySelector("img");
+    const soft = zoom.querySelector<HTMLImageElement>(".site-bg-soft");
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -66,6 +71,12 @@ export default function ReconBackground() {
     let vh = wrap.clientHeight || window.innerHeight;
     let posX = 0.5;
     let posY = 0.5;
+    let base = 200;
+    let ringR = 200;
+    let lastL = -1;
+    let lastZoomText = "";
+    let lastSoft = -1;
+    let lastZoomT = "";
 
     const readLayout = () => {
       vw = wrap.clientWidth || window.innerWidth;
@@ -75,6 +86,10 @@ export default function ReconBackground() {
         posX = Number.isFinite(px) ? px : 0.5;
         posY = Number.isFinite(py) ? py : 0.5;
       }
+      base = clamp(Math.min(vw, vh) * 0.3, 120, 260);
+      ringR = 0.5 * Math.hypot(base * 1.35, base) + 6; // ring radius at full size
+      ringWrap.style.width = ringWrap.style.height = `${ringR * 2}px`;
+      ringWrap.style.margin = `${-ringR}px 0 0 ${-ringR}px`;
     };
 
     // Normalised image coords -> viewport px, honouring object-fit: cover + object-position.
@@ -110,15 +125,15 @@ export default function ReconBackground() {
       scansLeft: 1,
       Z: 1,
       k: 1,
-      blur: 0,
+      defocus: 0, // 0 (sharp) .. 1 (fully soft)
       pulse: -1,
-      ringA: 0,
       lastPoi: -1,
       status: "" as StatusText | "",
       acquired: false,
     };
     let clock = 0;
     let lastTick = 0;
+    let lastDraw = 0;
     let raf = 0;
     let running = false;
     let stoppedAt = 0;
@@ -133,7 +148,7 @@ export default function ReconBackground() {
       }
       if (S.acquired !== acquired) {
         S.acquired = acquired;
-        svg.dataset.state = acquired ? "acquired" : "search";
+        root.dataset.state = acquired ? "acquired" : "search";
       }
     };
 
@@ -203,7 +218,7 @@ export default function ReconBackground() {
       const p = clamp(el / S.dur, 0, 1);
       let jit = 1;
       S.pulse = -1;
-      S.blur = 0;
+      S.defocus = 0;
 
       switch (S.phase) {
         case "scan":
@@ -224,10 +239,9 @@ export default function ReconBackground() {
           S.Z = lerp(1, ZOOM_MAX, ease(p));
           S.k = lerp(0.78, 0.55, ease(p));
           // lens defocus while travelling, then rack back to sharp (autofocus)
-          if (p < 0.55) S.blur = 1.3 * ease(p / 0.55);
+          if (p < 0.55) S.defocus = ease(p / 0.55);
           else {
-            const f = ease((p - 0.55) / 0.45);
-            S.blur = 1.3 * (1 - f);
+            S.defocus = 1 - ease((p - 0.55) / 0.45);
             S.pulse = (p - 0.55) / 0.45;
           }
           jit = 0.6;
@@ -253,76 +267,76 @@ export default function ReconBackground() {
       draw(S.x + jx, S.y + jy);
     };
 
+    // All writes below are transform/opacity only; nothing triggers layout or paint of the page.
     const draw = (cx: number, cy: number) => {
-      // photo layer: lens zoom about the target
-      zoom.style.transform = S.Z > 1.0005 ? `scale(${S.Z.toFixed(4)})` : "";
-      zoom.style.filter = S.blur > 0.05 ? `blur(${S.blur.toFixed(2)}px)` : "";
-
-      const base = clamp(Math.min(vw, vh) * 0.3, 120, 260);
-      const w = base * 1.35 * S.k;
-      const h = base * S.k;
-      const x0 = cx - w / 2;
-      const x1 = cx + w / 2;
-      const y0 = cy - h / 2;
-      const y1 = cy + h / 2;
-      const L = Math.min(w, h) * 0.24;
-
-      rectEl.setAttribute(
-        "d",
-        `M${x0} ${y0 + L}V${y0}H${x0 + L}M${x1 - L} ${y0}H${x1}V${y0 + L}M${x1} ${y1 - L}V${y1}H${x1 - L}M${x0 + L} ${y1}H${x0}V${y1 - L}`,
-      );
-      marksEl.setAttribute("d", [
-        [x0 - 7, cy], [x1 + 7, cy], [cx, y0 - 7], [cx, y1 + 7],
-      ].map(([mx, my]) => `M${mx - 3} ${my}L${mx} ${my - 3}L${mx + 3} ${my}L${mx} ${my + 3}Z`).join(""));
-
-      const r = 0.5 * Math.hypot(base * 1.35, base) * (0.62 + 0.38 * S.k) + 6;
-      S.ringA = (S.ringA + 0.12) % 360;
-      ringG.setAttribute("transform", `translate(${cx} ${cy}) rotate(${S.ringA.toFixed(2)})`);
-      ringOuter.setAttribute("r", String(r));
-      ringInner.setAttribute("r", String(r * 0.72));
-      ringTicks.setAttribute(
-        "d",
-        [0, 90, 180, 270].map((a) => {
-          const rad = (a * Math.PI) / 180;
-          const c = Math.cos(rad);
-          const s = Math.sin(rad);
-          return `M${(r - 5) * c} ${(r - 5) * s}L${(r + 4) * c} ${(r + 4) * s}`;
-        }).join(""),
-      );
-
-      crossEl.setAttribute("d", `M${cx - 7} ${cy}H${cx - 2.5}M${cx + 2.5} ${cy}H${cx + 7}M${cx} ${cy - 7}V${cy - 2.5}M${cx} ${cy + 2.5}V${cy + 7}`);
-
-      // slow sweep line inside the frame
-      const by = cy + Math.sin(clock * 0.8) * (h / 2 - 3);
-      beamEl.setAttribute("x1", String(x0 + 4));
-      beamEl.setAttribute("x2", String(x1 - 4));
-      beamEl.setAttribute("y1", String(by));
-      beamEl.setAttribute("y2", String(by));
-
-      if (S.pulse >= 0) {
-        pulseEl.setAttribute("cx", String(cx));
-        pulseEl.setAttribute("cy", String(cy));
-        pulseEl.setAttribute("r", String(Math.max(w, h) * (0.5 + 0.45 * S.pulse)));
-        pulseEl.style.opacity = String(0.55 * (1 - S.pulse));
-      } else {
-        pulseEl.style.opacity = "0";
+      // photo layer: lens zoom about the target; defocus = crossfade to the soft copy
+      const zt = S.Z > 1.0005 ? `scale(${S.Z.toFixed(4)})` : "";
+      if (zt !== lastZoomT) {
+        zoom.style.transform = zt;
+        lastZoomT = zt;
+      }
+      if (soft) {
+        const d = Math.round(S.defocus * 100) / 100;
+        if (d !== lastSoft) {
+          soft.style.opacity = String(d);
+          lastSoft = d;
+        }
       }
 
-      const ty = y1 + 17;
-      statusEl.setAttribute("x", String(x0));
-      statusEl.setAttribute("y", String(ty));
-      // narrow frames (phones, or contracted during zoom): stack the zoom readout under the status
+      root.style.transform = `translate3d(${half(cx)}px,${half(cy)}px,0)`;
+
+      const w = base * 1.35 * S.k;
+      const h = base * S.k;
+      const hw = w / 2;
+      const hh = h / 2;
+      const L = Math.round(clamp(Math.min(w, h) * 0.24, 22, 62));
+      if (L !== lastL) {
+        for (const c of [cTL, cTR, cBL, cBR]) c.style.width = c.style.height = `${L}px`;
+        lastL = L;
+      }
+      cTL.style.transform = `translate3d(${-hw}px,${-hh}px,0)`;
+      cTR.style.transform = `translate3d(${hw - L}px,${-hh}px,0)`;
+      cBL.style.transform = `translate3d(${-hw}px,${hh - L}px,0)`;
+      cBR.style.transform = `translate3d(${hw - L}px,${hh - L}px,0)`;
+
+      mL.style.transform = `translate3d(${-hw - 7}px,0,0) rotate(45deg)`;
+      mR.style.transform = `translate3d(${hw + 7}px,0,0) rotate(45deg)`;
+      mT.style.transform = `translate3d(0,${-hh - 7}px,0) rotate(45deg)`;
+      mB.style.transform = `translate3d(0,${hh + 7}px,0) rotate(45deg)`;
+
+      const r = 0.5 * Math.hypot(base * 1.35, base) * (0.62 + 0.38 * S.k) + 6;
+      ringWrap.style.transform = `scale(${(r / ringR).toFixed(4)})`;
+
+      const by = Math.sin(clock * 0.8) * (hh - 3);
+      beam.style.transform = `translate3d(${-hw + 4}px,${by.toFixed(2)}px,0) scaleX(${((w - 8) / 100).toFixed(3)})`;
+
+      if (S.pulse >= 0) {
+        pulse.style.transform = `scale(${((Math.max(w, h) * (0.5 + 0.45 * S.pulse)) / 50).toFixed(3)})`;
+        pulse.style.opacity = String((0.55 * (1 - S.pulse)).toFixed(2));
+      } else if (pulse.style.opacity !== "0") {
+        pulse.style.opacity = "0";
+      }
+
+      // labels under the frame; stack the zoom readout on narrow frames
+      const ly = Math.round(hh + 10);
+      statusEl.style.transform = `translate3d(${Math.round(-hw)}px,${ly}px,0)`;
       const narrow = w < 235;
-      zoomTxt.setAttribute("text-anchor", narrow ? "start" : "end");
-      zoomTxt.setAttribute("x", String(narrow ? x0 : x1));
-      zoomTxt.setAttribute("y", String(narrow ? ty + 12 : ty));
-      zoomTxt.textContent = `ZOOM ×${S.Z.toFixed(1)}`;
+      zoomTxt.style.transform = narrow
+        ? `translate3d(${Math.round(-hw)}px,${ly + 14}px,0)`
+        : `translate3d(${Math.round(hw)}px,${ly}px,0) translateX(-100%)`;
+      const zt2 = `ZOOM ×${S.Z.toFixed(1)}`;
+      if (zt2 !== lastZoomText) {
+        zoomTxt.textContent = zt2;
+        lastZoomText = zt2;
+      }
     };
 
     const frame = (now: number) => {
       raf = requestAnimationFrame(frame);
-      const dt = Math.min(now - lastTick, 100);
+      if (now - lastDraw < FRAME_MS) return;
+      const dt = Math.min(now - (lastTick || now), 100);
       lastTick = now;
+      lastDraw = now;
       clock += dt / 1000;
       update(now);
     };
@@ -344,7 +358,7 @@ export default function ReconBackground() {
     const drawStatic = () => {
       const poi = POIS.map((p) => poiToView(p[0], p[1])).find((v) => inView(v[0], v[1]));
       const [x, y] = poi ?? [vw * 0.55, vh * 0.5];
-      Object.assign(S, { x, y, Z: 1, k: 0.9, blur: 0, pulse: -1 });
+      Object.assign(S, { x, y, Z: 1, k: 0.9, defocus: 0, pulse: -1 });
       setStatus("SEARCHING", false);
       draw(x, y);
     };
@@ -353,7 +367,6 @@ export default function ReconBackground() {
       if (reduced.matches) {
         stop();
         zoom.style.transform = "";
-        zoom.style.filter = "";
         drawStatic();
       } else if (document.hidden) stop();
       else start();
@@ -364,13 +377,12 @@ export default function ReconBackground() {
     };
 
     readLayout();
-    const now0 = performance.now();
     S.x = vw * 0.5;
     S.y = vh * 0.55;
-    beginScan(now0);
+    beginScan(performance.now());
     if (reduced.matches) drawStatic();
     else draw(S.x, S.y);
-    svg.classList.add("is-live");
+    layer.classList.add("is-live");
     start();
 
     const ro = new ResizeObserver(onResize);
@@ -387,24 +399,47 @@ export default function ReconBackground() {
   }, []);
 
   return (
-    <div ref={wrapRef} className="site-bg" aria-hidden="true">
-      <div ref={zoomRef} className="site-bg-zoom">
-        <Image src="/images/backdrop-terrain-clean.webp" alt="" fill priority sizes="100vw" />
+    <>
+      <div ref={wrapRef} className="site-bg" aria-hidden="true">
+        <div ref={zoomRef} className="site-bg-zoom">
+          <Image src="/images/backdrop-terrain-clean.webp" alt="" fill priority sizes="100vw" />
+          <Image
+            className="site-bg-soft"
+            src="/images/backdrop-terrain-soft.webp"
+            alt=""
+            fill
+            sizes="100vw"
+            unoptimized
+            style={{ opacity: 0 }}
+          />
+        </div>
       </div>
-      <svg ref={svgRef} className="recon-reticle" data-state="search" focusable="false">
-        <circle data-r="pulse" className="rr-line" style={{ opacity: 0 }} />
-        <g data-r="ring">
-          <circle data-r="ring-outer" className="rr-line rr-dash" />
-          <circle data-r="ring-inner" className="rr-line rr-faint" />
-          <path data-r="ring-ticks" className="rr-line" />
-        </g>
-        <line data-r="beam" className="rr-line rr-faint" />
-        <path data-r="rect" className="rr-line rr-strong" />
-        <path data-r="marks" className="rr-line rr-marks" />
-        <path data-r="cross" className="rr-line" />
-        <text data-r="status" className="rr-text" />
-        <text data-r="zoomtxt" className="rr-text rr-zoom" textAnchor="end" />
-      </svg>
-    </div>
+      <div ref={layerRef} className="recon-layer" aria-hidden="true">
+        <div className="rr" data-state="search">
+          <div className="rr-ring-wrap">
+            <svg className="rr-ring" viewBox="-100 -100 200 200" focusable="false">
+              <circle r="98" className="rr-dash" />
+              <circle r="70" className="rr-faint" />
+              <path d="M91 0H103M-91 0H-103M0 91V103M0 -91V-103" className="rr-tick" />
+            </svg>
+          </div>
+          <i className="rr-beam" />
+          <i className="rr-corner tl" />
+          <i className="rr-corner tr" />
+          <i className="rr-corner bl" />
+          <i className="rr-corner br" />
+          <i className="rr-mark" />
+          <i className="rr-mark" />
+          <i className="rr-mark" />
+          <i className="rr-mark" />
+          <svg className="rr-cross" viewBox="-8 -8 16 16" width="16" height="16" focusable="false">
+            <path d="M-7 0H-2.5M2.5 0H7M0 -7V-2.5M0 2.5V7" />
+          </svg>
+          <i className="rr-pulse" />
+          <span className="rr-text rr-status" />
+          <span className="rr-text rr-zoomtxt" />
+        </div>
+      </div>
+    </>
   );
 }

@@ -801,25 +801,44 @@ h2 span { color: var(--steel); }
 }
 
 /* ==========================================================================
-   RECON RETICLE: drone-camera overlay on the fixed background. The photo layer
-   (.site-bg-zoom) is scaled by script for the optical zoom; the SVG is not.
+   RECON RETICLE (compositor-only). Photo layer (.site-bg) sits at the very back,
+   the shader above it, then the reticle layer; page content is above all of them.
+   Everything that moves below is positioned with transform, so nothing repaints.
    ========================================================================== */
-.site-bg-zoom { position: absolute; inset: 0; will-change: transform; }
-.recon-reticle { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; overflow: visible; pointer-events: none; --c: #78866a; opacity: 0; transition: opacity 1.4s ease; }
-.recon-reticle.is-live { opacity: 1; }
-.recon-reticle[data-state="acquired"] { --c: #c58a45; }
-.recon-reticle .rr-line { fill: none; stroke: var(--c); stroke-width: 1.4; stroke-linecap: square; transition: stroke .8s ease; }
-.recon-reticle .rr-strong { stroke-width: 1.8; }
-.recon-reticle .rr-faint { stroke-width: 1; opacity: .6; }
-.recon-reticle .rr-dash { stroke-width: 1.2; stroke-dasharray: 2 7; opacity: .9; }
-.recon-reticle .rr-marks { fill: var(--c); fill-opacity: .85; stroke-width: .5; transition: stroke .8s ease, fill .8s ease; }
-.recon-reticle .rr-text { fill: var(--c); font: 600 10px var(--mono); letter-spacing: .16em; paint-order: stroke; stroke: rgba(11,15,13,.8); stroke-width: 2.5px; transition: fill .8s ease; animation: rr-swap .6s ease both; }
-.recon-reticle .rr-zoom { animation: none; opacity: .9; }
+.site-bg-zoom { position: absolute; inset: 0; will-change: transform; backface-visibility: hidden; }
+.site-bg { z-index: -3; }
+.atc-shader-fixed { z-index: -2; }
+.recon-layer { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; contain: layout paint style; opacity: 0; transition: opacity 1.4s ease; }
+.recon-layer.is-live { opacity: 1; }
+.rr { --c: #78866a; position: absolute; left: 0; top: 0; width: 0; height: 0; will-change: transform; }
+.rr[data-state="acquired"] { --c: #c58a45; }
+.rr > * { position: absolute; left: 0; top: 0; will-change: transform; }
+.rr-ring-wrap { will-change: transform; }
+.rr-ring { display: block; width: 100%; height: 100%; overflow: visible; animation: rr-spin 52s linear infinite; }
+.rr-ring circle, .rr-ring path, .rr-cross path { fill: none; stroke: var(--c); transition: stroke .8s ease; }
+.rr-dash { stroke-width: 1.2; stroke-dasharray: 1.6 5.6; opacity: .9; }
+.rr-faint { stroke-width: 1; opacity: .6; }
+.rr-tick { stroke-width: 1.4; }
+.rr-cross { margin: -8px 0 0 -8px; }
+.rr-cross path { stroke-width: 1.4; }
+.rr-corner { width: 24px; height: 24px; border: 0 solid var(--c); transition: border-color .8s ease; }
+.rr-corner.tl { border-top-width: 1.8px; border-left-width: 1.8px; }
+.rr-corner.tr { border-top-width: 1.8px; border-right-width: 1.8px; }
+.rr-corner.bl { border-bottom-width: 1.8px; border-left-width: 1.8px; }
+.rr-corner.br { border-bottom-width: 1.8px; border-right-width: 1.8px; }
+.rr-mark { width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; background: var(--c); opacity: .85; transition: background-color .8s ease; }
+.rr-beam { width: 100px; height: 1px; background: linear-gradient(90deg,transparent,var(--c),transparent); opacity: .55; transform-origin: 0 50%; }
+.rr-pulse { width: 100px; height: 100px; margin: -50px 0 0 -50px; border: 1.2px solid var(--c); border-radius: 50%; opacity: 0; transition: border-color .8s ease; }
+.rr-text { white-space: nowrap; font: 600 10px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--c); text-shadow: 0 0 4px rgba(11,15,13,.95), 0 1px 1px rgba(11,15,13,.95); transition: color .8s ease; }
+.rr-status { animation: rr-swap .6s ease both; }
+.rr-zoomtxt { opacity: .9; }
+@keyframes rr-spin { to { transform: rotate(360deg); } }
 @keyframes rr-swap { from { opacity: 0; } to { opacity: 1; } }
 @media (max-width: 700px) {
-  .recon-reticle .rr-text { font-size: 10px; letter-spacing: .12em; }
-  .recon-reticle.is-live { opacity: .75; }
+  .recon-layer.is-live { opacity: .75; }
+  .rr-text { font-size: 9px; letter-spacing: .12em; }
 }
+@media (prefers-reduced-motion: reduce) { .rr-ring { animation: none; } }
 
 
 /* ==========================================================================
@@ -1088,3 +1107,6 @@ h2 span { color: var(--text-2); }
 .round-teaser, .round-code, .round-output strong, .station-card-value { color: color-mix(in srgb, var(--card-accent, var(--accent-2)) 62%, var(--text)); }
 .station-card-value { color: var(--accent-2); }
 @media (max-width: 520px) { .kicker-divider { display: none; } .hero-kicker { display: block; line-height: 1.7; } .hero-kicker .status-dot { margin-right: 9px; vertical-align: 1px; } }
+
+/* perf: lines are <=14% opacity, so normal blending is visually identical to screen and avoids a full-screen blend pass */
+.telemetry-lines { mix-blend-mode: normal; }
