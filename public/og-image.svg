@@ -8,7 +8,7 @@
   <circle cx="920" cy="315" r="320" fill="url(#glow)"/>
   <g fill="none" stroke="#00E676" opacity=".7"><circle cx="920" cy="315" r="180"/><circle cx="920" cy="315" r="130"/><path d="M920 88v454M693 315h454" stroke-dasharray="4 8"/></g>
   <circle cx="920" cy="315" r="13" fill="#FFB300"/>
-  <text x="82" y="120" fill="#00E676" font-family="Arial,sans-serif" font-size="22" letter-spacing="5">ASTRA CLUB PRESENTS / INTERCOLLEGIATE 2026</text>
+  <text x="82" y="120" fill="#00E676" font-family="Arial,sans-serif" font-size="22" letter-spacing="5">ASTRA CLUB PRESENTS / 2026</text>
   <text x="78" y="280" fill="#F1F5F9" font-family="Arial,sans-serif" font-size="94" font-weight="700" letter-spacing="-4">ASTRA: ZERO</text>
   <text x="78" y="380" fill="#F1F5F9" font-family="Arial,sans-serif" font-size="94" font-weight="700" letter-spacing="-4">HOUR<tspan fill="#FFB300">.</tspan></text>
   <text x="84" y="440" fill="#8B9BB4" font-family="Arial,sans-serif" font-size="24" letter-spacing="2">A DEFENCE PROBLEM-SOLVING CONTEST</text>

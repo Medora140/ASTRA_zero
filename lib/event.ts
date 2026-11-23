@@ -15,8 +15,10 @@ export const event = {
   startDate: "2026-12-03",
   // The exact programme start time is still pending; the countdown marks the event date.
   dateTime: "2026-12-03T00:00:00+05:30",
-  prizePool: "₹15,000",
-  teamLimit: 5,
+  prizePool: "₹14,000",
+  teamMin: 3,
+  teamMax: 4,
+  teamLabel: "3–4",
   networkNodes: 8,
   venue: {
     name: "BMS Institute of Technology and Management",
@@ -26,6 +28,32 @@ export const event = {
   siteUrl,
   googleFormUrl,
   showBackdrops,
+} as const;
+
+// Chief guest. To replace: drop a new photo at the `photo` path (or change the path),
+// then edit the text below. Everything on the page reads from this object.
+export const chiefGuest = {
+  name: "Col Thirunavukkarasu",
+  designation: "Colonel · Indian Army",
+  photo: "/images/chief-guest.webp",
+  photoWidth: 413,
+  photoHeight: 531,
+  photoAlt: "Portrait of Col Thirunavukkarasu, Indian Army",
+  summary:
+    "Col Thirunavukkarasu has served in the Indian Army for 26 years. He has served in numerous field locations and counter-insurgency areas, and has tenanted important operational and instructional roles.",
+  facts: [
+    { value: "26", label: "Years in the Army" },
+    { value: "NDA", label: "Alumnus" },
+    { value: "DSSC", label: "Wellington graduate" },
+    { value: "★", label: "Commendation card" },
+  ],
+  highlights: [
+    "Commanded a battalion in J&K",
+    "Senior Instructor in the operational logistics wing",
+    "Staff appointments in Counter Insurgency Force Headquarters, Integrated Indian Army Headquarters and the Army Innovation Wing",
+    "Alumnus of the National Defence Academy and graduate of the Defence Services Staff College, Wellington",
+    "Awarded a commendation card for achieving operational excellence",
+  ],
 } as const;
 
 export const sections = [
@@ -73,7 +101,6 @@ export const timeline = [
 
 export const registrationFormFields = [
   "Team name",
-  "College name (required)",
   "Team leader name, email, and phone",
-  "Names of up to four additional members",
+  "Names of two to three additional members",
 ] as const;

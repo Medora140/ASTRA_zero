@@ -1,6 +1,6 @@
 # ASTRA: ZERO HOUR
 
-Two-page event site for the ASTRA intercollege defence problem-solving contest.
+Two-page event site for the ASTRA defence problem-solving contest.
 
 ## Run locally
 
@@ -14,7 +14,7 @@ For a production build, run `npm run build` and `npm start`.
 
 ## Content to confirm before launch
 
-- Publish the Google Form and make **College name** a required field. The team cap is five people total (leader plus up to four teammates). The current page lists the team details the form should collect; it does not collect or transmit participant data itself.
+- Publish the Google Form for teams of three to four people (a leader plus two to three teammates). The current page lists the team details the form should collect; it does not collect or transmit participant data itself. The prize pool is ₹14,000.
 - Confirm the venue, schedule times, guest, sponsors, and event contact details before replacing their placeholders.
 - Keep the public event to the two confirmed operations: **Operation: Black Box** and **Operation: Compromised Node**. Do not publish the hidden twist details or internal organising-team duties.
 - Keep the compromised station unmarked in public network artwork. The source diagram highlights a station, so the website uses a neutral eight-node redraw.

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { sections } from "@/lib/event";
 
@@ -39,7 +40,7 @@ export function SiteNav() {
   return (
     <header className="site-header">
       <Link className="brand" href="/" aria-label="ASTRA Zero Hour home">
-        <span className="brand-mark" aria-hidden="true"><span>A</span></span>
+        <Image className="brand-logo" src="/images/astra-logo.webp" alt="" width={720} height={374} priority />
         <span className="brand-type"><strong>ASTRA</strong><small>ZERO HOUR / 03 DEC 2026</small></span>
       </Link>
       <nav className="desktop-nav" aria-label="Main navigation">

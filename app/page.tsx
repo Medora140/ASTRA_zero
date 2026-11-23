@@ -7,7 +7,7 @@ import { MissionMotion } from "@/components/mission-motion";
 import { SiteFooter, SiteNav } from "@/components/site-nav";
 import { ScrollExpansionHero } from "@/components/ui/scroll-expansion-hero";
 import { ScrollMorphHero } from "@/components/ui/scroll-morph-hero";
-import { event, rounds, timeline } from "@/lib/event";
+import { chiefGuest, event, rounds, timeline } from "@/lib/event";
 
 const sectionImages = {
   droneSky: "/images/backdrop-drone-sky.webp",
@@ -123,6 +123,16 @@ export default function HomePage() {
                 <small>PRIZE POOL</small>
                 <strong>{event.prizePool}</strong>
               </div>
+              <div className="readout-guest">
+                <small>CHIEF GUEST</small>
+                <a
+                  className="text-link readout-cta"
+                  href="#guests"
+                  aria-label={`View chief guest profile: ${chiefGuest.name}`}
+                >
+                  VIEW PROFILE <span aria-hidden="true" className="btn-arrow btn-arrow-down">↓</span>
+                </a>
+              </div>
             </div>
           </div>
           <div className="countdown-dock">
@@ -182,7 +192,7 @@ export default function HomePage() {
               </div>
               <div className="mission-metrics" role="group" aria-label="Event snapshot">
                 <div><strong>02</strong><small>INVESTIGATIONS</small></div>
-                <div><strong>05</strong><small>MAX TEAM SIZE</small></div>
+                <div><strong>{event.teamLabel}</strong><small>TEAM SIZE</small></div>
                 <div><strong>{String(event.networkNodes).padStart(2, "0")}</strong><small>NETWORK STATIONS</small></div>
               </div>
             </div>
@@ -313,20 +323,65 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 08: GUEST SPEAKERS */}
-        <section className="people-section section-pad image-section" id="guests" aria-labelledby="guests-title">
+        {/* 08: CHIEF GUEST (content lives in lib/event.ts -> chiefGuest) */}
+        <section className="chief-section section-pad image-section" id="guests" aria-labelledby="chief-title">
+          <div className="wrap chief-grid">
+            <figure className="chief-portrait" data-reveal>
+              <div className="chief-frame">
+                <div className="chief-photo">
+                  <Image
+                    src={chiefGuest.photo}
+                    alt={chiefGuest.photoAlt}
+                    width={chiefGuest.photoWidth}
+                    height={chiefGuest.photoHeight}
+                    sizes="(max-width: 700px) 78vw, 380px"
+                  />
+                </div>
+                <div className="chief-tag" aria-hidden="true">
+                  <span>CHIEF GUEST</span>
+                  <span>INDIAN ARMY</span>
+                </div>
+                <i className="chief-bracket tl" aria-hidden="true" />
+                <i className="chief-bracket tr" aria-hidden="true" />
+                <i className="chief-bracket bl" aria-hidden="true" />
+                <i className="chief-bracket br" aria-hidden="true" />
+              </div>
+            </figure>
+            <div className="chief-copy" data-reveal>
+              <SectionEyebrow code="05">CHIEF GUEST</SectionEyebrow>
+              <h2 id="chief-title">{chiefGuest.name}</h2>
+              <p className="chief-role">{chiefGuest.designation}</p>
+              <p className="chief-summary">{chiefGuest.summary}</p>
+              <dl className="chief-facts">
+                {chiefGuest.facts.map((fact) => (
+                  <div key={fact.label}>
+                    <dt>{fact.value}</dt>
+                    <dd>{fact.label}</dd>
+                  </div>
+                ))}
+              </dl>
+              <h3 className="chief-subhead">Service record</h3>
+              <ul className="chief-highlights">
+                {chiefGuest.highlights.map((item) => <li key={item}>{item}</li>)}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* 09: GUEST SPEAKERS */}
+        <section className="people-section section-pad image-section" id="speakers" aria-labelledby="guests-title">
           <SectionBackdrop src={sectionImages.droneSky} position="right 42%" tone="medium" />
           <div className="wrap people-grid">
             <div className="people-copy" data-reveal>
-              <SectionEyebrow code="05">MISSION CONTROL</SectionEyebrow>
+              <SectionEyebrow code="06">MISSION CONTROL</SectionEyebrow>
               <h2 id="guests-title">Guest speakers</h2>
-              <p>Guest identities and briefing sessions will be announced once confirmed by Mission Control.</p>
+              <p>Additional guest identities and briefing sessions will be announced once confirmed by Mission Control.</p>
             </div>
             <article className="placeholder-card guest-placeholder" data-reveal>
               <span className="placeholder-index">GUEST DOSSIER / PENDING</span>
               <div className="placeholder-silhouette" aria-hidden="true">?</div>
               <div>
-                <small>FEATURED GUEST</small>
+                <small>ADDITIONAL SPEAKER</small>
                 <h3>To be announced</h3>
                 <p>Speaker details and operational credentials coming soon.</p>
               </div>
@@ -335,12 +390,12 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 09: SPONSORS & PARTNERS */}
+        {/* 10: SPONSORS & PARTNERS */}
         <section className="sponsor-section section-pad image-section" id="sponsors" aria-labelledby="sponsors-title">
           <SectionBackdrop src={sectionImages.networkTraffic} position="center 55%" tone="medium" />
           <div className="wrap sponsor-inner">
             <div className="sponsor-heading" data-reveal>
-              <SectionEyebrow code="06">PARTNERSHIP CHANNEL</SectionEyebrow>
+              <SectionEyebrow code="07">PARTNERSHIP CHANNEL</SectionEyebrow>
               <h2 id="sponsors-title">Sponsors &amp; partners</h2>
               <p>Partner channels and technical co-sponsors will appear here after confirmation.</p>
             </div>
@@ -356,12 +411,12 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 10: PRIZE CTA SECTION */}
+        {/* 11: PRIZE CTA SECTION */}
         <section className="prize-cta-section image-section" aria-label="Prize pool and registration" data-reveal>
           <SectionBackdrop src={sectionImages.droneForest} position="center 60%" tone="medium" />
           <div className="wrap prize-cta-inner">
             <div>
-              <SectionEyebrow code="07">REWARDS FOR REASONING</SectionEyebrow>
+              <SectionEyebrow code="08">REWARDS FOR REASONING</SectionEyebrow>
               <p className="prize-pool">{event.prizePool}<span> PRIZE POOL</span></p>
               <p className="prize-small">Award distribution details will be announced during debrief.</p>
             </div>

@@ -21,7 +21,7 @@ export function EventSchema() {
       },
     },
     description:
-      "A one-day intercollege defence problem-solving contest with two evidence-led investigations: the GHATAK autonomous rescue drone incident and an eight-station communication network challenge.",
+      "A one-day defence problem-solving contest with two evidence-led investigations: the GHATAK autonomous rescue drone incident and an eight-station communication network challenge.",
     organizer: {
       "@type": "Organization",
       name: `ASTRA — ${event.clubName} — BMSIT&M`,

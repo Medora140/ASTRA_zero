@@ -8,11 +8,11 @@ import { event, registrationFormFields } from "@/lib/event";
 export const metadata: Metadata = {
   title: "Team Registration",
   description:
-    "Prepare your intercollege team for ASTRA: ZERO HOUR, a two-round defence problem-solving contest on 03 December 2026 at BMSIT&M. College name is required.",
+    "Prepare your team for ASTRA: ZERO HOUR, a two-round defence problem-solving contest on 03 December 2026 at BMSIT&M.",
   alternates: { canonical: "/register" },
   openGraph: {
     title: "Register for ASTRA: ZERO HOUR 2026",
-    description: "Two investigations. One day. Team size up to five · 03 December 2026 · BMSIT&M Bengaluru.",
+    description: "Two investigations. One day. Teams of three to four · 03 December 2026 · BMSIT&M Bengaluru.",
     url: "/register",
     images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "ASTRA: ZERO HOUR team registration" }],
   },
@@ -43,11 +43,11 @@ export default function RegisterPage() {
           <div className="register-header" data-reveal>
             <p className="hero-kicker"><span className="status-dot" /> TEAM DEPLOYMENT / REGISTRATION</p>
             <h1>ASSEMBLE<br /><span>YOUR TEAM.</span></h1>
-            <p className="register-lede">Bring together up to five students from your college for two evidence-led investigations. Keep your team and institution details ready for the official event form.</p>
+            <p className="register-lede">Bring together three to four students for two evidence-led investigations. Keep your team details ready for the official event form.</p>
             <div className="register-stats">
               <div><small>EVENT DATE</small><strong>{event.dateLabel}</strong></div>
               <div><small>ROUNDS</small><strong>02 OPERATIONS</strong></div>
-              <div><small>MAXIMUM TEAM SIZE</small><strong>{String(event.teamLimit).padStart(2, "0")} PEOPLE</strong></div>
+              <div><small>TEAM SIZE</small><strong>{event.teamLabel} MEMBERS</strong></div>
               <div><small>PRIZE POOL</small><strong>{event.prizePool}</strong></div>
             </div>
           </div>
@@ -66,19 +66,12 @@ export default function RegisterPage() {
               )}
               <div className="register-panel-label"><span>FORM 01</span><span>DETAILS TO PREPARE</span></div>
               <h2 id="checklist-title">Before you register</h2>
-              <p>The participant Google Form will collect your team details, including your college name.</p>
+              <p>The participant Google Form will collect your team details.</p>
               <ul className="form-fields">
                 {registrationFormFields.map((field, index) => (
                   <li key={field}><span>{String(index + 1).padStart(2, "0")}</span>{field}<b aria-hidden="true">✓</b></li>
                 ))}
               </ul>
-              <div className="college-required">
-                <span className="required-star">*</span>
-                <div>
-                  <strong>College name is required</strong>
-                  <small>ASTRA: ZERO HOUR is an intercollege event. Enter your institution’s full name in the official form.</small>
-                </div>
-              </div>
             </section>
 
             <aside className="team-brief image-section" aria-labelledby="team-brief-title" data-reveal>
@@ -92,16 +85,16 @@ export default function RegisterPage() {
                   sizes="(max-width: 700px) 92vw, 42vw"
                 />
               )}
-              <div className="register-panel-label"><span>ROSTER LIMIT</span><span>01–{String(event.teamLimit).padStart(2, "0")}</span></div>
+              <div className="register-panel-label"><span>TEAM SIZE</span><span>{String(event.teamMin).padStart(2, "0")}–{String(event.teamMax).padStart(2, "0")}</span></div>
               <div className="roster-visual" aria-hidden="true">
-                <div className="roster-ring"><span>{String(event.teamLimit).padStart(2, "0")}</span><small>MAX</small></div>
+                <div className="roster-ring"><span>{event.teamLabel}</span><small>MEMBERS</small></div>
                 <span className="roster-axis axis-a" />
                 <span className="roster-axis axis-b" />
                 <span className="roster-coordinate coord-a">TEAM / 001</span>
-                <span className="roster-coordinate coord-b">ROSTER / 05</span>
+                <span className="roster-coordinate coord-b">ROSTER / {String(event.teamMin).padStart(2, "0")}–{String(event.teamMax).padStart(2, "0")}</span>
               </div>
               <h2 id="team-brief-title">One team.<br />Two operations.</h2>
-              <p>Register one team with a named leader and up to four additional members. Eligibility and final participation rules will be listed on the official event page.</p>
+              <p>Register one team of three to four members: a named leader plus two to three additional members. Eligibility and final participation rules will be listed on the official event page.</p>
               <div className="registration-status">
                 <span className={isPublishedRegistration ? "status-dot pulse-indicator" : "amber-dot pulse-indicator"} />
                 <div>

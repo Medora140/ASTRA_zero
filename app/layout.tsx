@@ -34,11 +34,10 @@ export const metadata: Metadata = {
     template: "%s | ASTRA: ZERO HOUR",
   },
   description:
-    "ASTRA: ZERO HOUR is a one-day intercollege defence problem-solving contest on 03 December 2026 at BMSIT&M, Bengaluru. Investigate the GHATAK drone incident and an eight-station communication network.",
+    "ASTRA: ZERO HOUR is a one-day defence problem-solving contest on 03 December 2026 at BMSIT&M, Bengaluru. Investigate the GHATAK drone incident and an eight-station communication network.",
   keywords: [
     "ASTRA Zero Hour",
     "Defence problem-solving contest",
-    "Intercollege event 2026",
     "GHATAK drone investigation",
     "Compromised Node challenge",
     "BMSIT&M Bengaluru",
@@ -49,7 +48,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "ASTRA: ZERO HOUR",
     title: "ASTRA: ZERO HOUR — A Defence Problem-Solving Contest",
-    description: "Two investigations. One day. ₹15,000 prize pool · 03 December 2026 · BMSIT&M Bengaluru.",
+    description: `Two investigations. One day. ${event.prizePool} prize pool · 03 December 2026 · BMSIT&M Bengaluru.`,
     url: "/",
     images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "ASTRA: ZERO HOUR — 03 December 2026" }],
   },

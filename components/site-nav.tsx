@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { event } from "@/lib/event";
 
@@ -8,10 +9,10 @@ export function SiteFooter() {
     <footer className="site-footer" id="contact">
       <div className="footer-brand">
         <Link className="brand" href="/">
-          <span className="brand-mark" aria-hidden="true"><span>A</span></span>
+          <Image className="brand-logo" src="/images/astra-logo.webp" alt="" width={720} height={374} />
           <span className="brand-type"><strong>ASTRA: ZERO HOUR</strong><small>{event.tagline.toUpperCase()}</small></span>
         </Link>
-        <p>A one-day intercollege defence problem-solving contest by ASTRA at BMSIT&amp;M.</p>
+        <p>A one-day defence problem-solving contest by ASTRA at BMSIT&amp;M.</p>
       </div>
       <div className="footer-meta">
         <span>{event.dateLabel}</span>
