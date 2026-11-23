@@ -40,7 +40,7 @@ export function SiteNav() {
   return (
     <header className="site-header">
       <Link className="brand" href="/" aria-label="ASTRA Zero Hour home">
-        <Image className="brand-logo" src="/images/astra-logo.webp" alt="" width={720} height={374} priority />
+        <Image className="brand-logo" src="/images/astra-logo.webp" alt="" width={360} height={360} priority />
         <span className="brand-type"><strong>ASTRA</strong><small>ZERO HOUR / 03 DEC 2026</small></span>
       </Link>
       <nav className="desktop-nav" aria-label="Main navigation">

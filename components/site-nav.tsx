@@ -9,7 +9,7 @@ export function SiteFooter() {
     <footer className="site-footer" id="contact">
       <div className="footer-brand">
         <Link className="brand" href="/">
-          <Image className="brand-logo" src="/images/astra-logo.webp" alt="" width={720} height={374} />
+          <Image className="brand-logo" src="/images/astra-logo.webp" alt="" width={360} height={360} />
           <span className="brand-type"><strong>ASTRA: ZERO HOUR</strong><small>{event.tagline.toUpperCase()}</small></span>
         </Link>
         <p>A one-day defence problem-solving contest by ASTRA at BMSIT&amp;M.</p>

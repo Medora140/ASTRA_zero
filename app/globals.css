@@ -1108,12 +1108,12 @@ h2 span { color: var(--text-2); }
 /* ==========================================================================
    BRAND LOGO + CHIEF GUEST
    ========================================================================== */
-.brand-logo { display: block; flex: 0 0 auto; width: auto; height: 44px; max-width: none; }
-.site-footer .brand-logo { height: 38px; }
+.brand-logo { display: block; flex: 0 0 auto; width: auto; height: 60px; max-width: none; }
+.site-footer .brand-logo { height: 56px; }
 @media (max-width: 700px) {
   .brand { gap: 8px; }
-  .brand-logo { height: 30px; }
-  .site-footer .brand-logo { height: 34px; }
+  .brand-logo { height: 42px; }
+  .site-footer .brand-logo { height: 48px; }
 }
 
 .chief-section { border-block: 1px solid var(--line); background-color: rgba(11,15,13,.4); background-image: radial-gradient(ellipse at 24% 50%, rgba(197,138,69,.075), transparent 52%); }
@@ -1180,3 +1180,8 @@ h2 span { color: var(--text-2); }
   .hero-readout .readout-cta::after { display: none; }
   .hero-readout .readout-cta:active { background: var(--accent-hi); }
 }
+
+/* hero copy shares the header's left edge, so it lines up with the logo */
+.hero-content.wrap { width: min(1320px, calc(100% - 64px)); }
+@media (max-width: 940px) { .hero-content.wrap { width: calc(100% - 32px); } }
+@media (max-width: 700px) { .hero-content.wrap { width: calc(100% - 24px); } }
